@@ -16,7 +16,9 @@ class Cube:
     def generate_cube(self):
         faces_labels = ['u', 'f', 'r', 'b', 'l', 'd']
 
+        # for i in range(len(faces_labels)):
         for i in faces_labels:
+            # face = [[i*10+0, i*10+1, i*10+2], [i*10+3, i*10+4, i*10+5], [i*10+6, i*10+7, i*10+8]]
             face = [[i, i, i], [i, i, i], [i, i, i]]
             self.faces[i] = face
 
@@ -24,112 +26,114 @@ class Cube:
         # faces_labels = ['u', 'f', 'r', 'b', 'l', 'd']
         face = self.faces[move[0]]
 
-        if "'" in move:
-            # rotate corners
-            face[0][0], face[0][2], face[2][2], face[2][0] = face[0][2], face[2][2], face[2][0], face[0][0]
-            # rotate edges
-            face[0][1], face[1][2], face[2][1], face[1][0] = face[1][2], face[2][1], face[1][0], face[0][1]
-        else:
-            # rotate corners
-            face[0][0], face[0][2], face[2][2], face[2][0] = face[2][0], face[0][0], face[0][2], face[2][2]
-            # rotate edges
-            face[0][1], face[1][2], face[2][1], face[1][0] = face[1][0], face[0][1], face[1][2], face[2][1]
-        
-        self.faces[move[0]] = face
-
-        if move == 'u':
-            self.faces['r'][0], self.faces['f'][0], self.faces['l'][0], self.faces['b'][0] = self.faces['b'][0], self.faces['r'][0], self.faces['f'][0], self.faces['l'][0]
-        elif move == "u'":
-            self.faces['r'][0], self.faces['f'][0], self.faces['l'][0], self.faces['b'][0] = self.faces['f'][0], self.faces['l'][0], self.faces['b'][0], self.faces['r'][0]
-        elif move == 'f':
-            (self.faces['u'][2],
-            [self.faces['r'][0][0], self.faces['r'][1][0], self.faces['r'][2][0]],
-            self.faces['d'][0],
-            [self.faces['l'][0][2], self.faces['l'][1][2], self.faces['l'][2][2]]) = (
-                [self.faces['l'][2][2], self.faces['l'][1][2], self.faces['l'][0][2]],
-                self.faces['u'][2],
-                [self.faces['r'][2][0], self.faces['r'][1][0], self.faces['r'][0][0]],
-                self.faces['d'][0]
-            )
-        elif move == "f'":
-            (self.faces['u'][2],
-            [self.faces['r'][2][0], self.faces['r'][1][0], self.faces['r'][0][0]],
-            self.faces['d'][0],
-            [self.faces['l'][2][2], self.faces['l'][1][2], self.faces['l'][0][2]]) = (
-                [self.faces['r'][0][0], self.faces['r'][1][0], self.faces['r'][2][0]],
-                self.faces['d'][0],
-                [self.faces['l'][0][2], self.faces['l'][1][2], self.faces['l'][2][2]],
-                self.faces['u'][2]
-            )
-        elif move == 'r':
-            ([self.faces['u'][2][2], self.faces['u'][1][2], self.faces['u'][0][2]],
-            [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
-            [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]],
-            [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]]) = (
-                [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]],
-                [self.faces['u'][2][2], self.faces['u'][1][2], self.faces['u'][0][2]],
-                [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
-                [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]]
-            )
-        elif move == "r'":
-            ([self.faces['u'][2][2], self.faces['u'][1][2], self.faces['u'][0][2]],
-            [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
-            [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]],
-            [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]]) = (
-                [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
-                [self.faces['d'][2][2], self.faces['d'][1][2], self.faces['d'][0][2]],
-                [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]],
-                [self.faces['u'][0][2], self.faces['u'][1][2], self.faces['u'][2][2]]
-            )
-        elif move == 'b':
-            (self.faces['u'][0],
-            [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
-            [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
-            [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]]) = (
-                [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
-                [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
-                [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]],
-                self.faces['u'][0]
-            )
-        elif move == "b'":
-            (self.faces['u'][0],
-            [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
-            [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
-            [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]]) = (
-                [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]],
-                self.faces['u'][0],
-                [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
-                [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]]
-            )
-        elif move == 'l':
-            ([self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
-            [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
-            [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
-            [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]]) = (
-                [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]],
-                [self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
-                [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
-                [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]]
-            )
-        elif move == "l'":
-            ([self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
-            [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
-            [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
-            [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]]) = (
-                [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
-                [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
-                [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]],
-                [self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]]
-            )
-        elif move == 'd':
-            self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['f'][2], self.faces['l'][2], self.faces['b'][2], self.faces['r'][2]
-        elif move == "d'":
-            self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['b'][2], self.faces['r'][2], self.faces['f'][2], self.faces['l'][2]
 
         # Double move
-        elif move[1] == '2':
+        if len(move) > 1 and move[1] == '2':
             self.make_move(move[0])
             self.make_move(move[0])
+        else:
+
+            if "'" in move:
+                # rotate corners
+                face[0][0], face[0][2], face[2][2], face[2][0] = face[0][2], face[2][2], face[2][0], face[0][0]
+                # rotate edges
+                face[0][1], face[1][2], face[2][1], face[1][0] = face[1][2], face[2][1], face[1][0], face[0][1]
+            else:
+                # rotate corners
+                face[0][0], face[0][2], face[2][2], face[2][0] = face[2][0], face[0][0], face[0][2], face[2][2]
+                # rotate edges  
+                face[0][1], face[1][2], face[2][1], face[1][0] = face[1][0], face[0][1], face[1][2], face[2][1]
+            
+            # self.faces[move[0]] = face
+
+            if move == 'u':
+                self.faces['r'][0], self.faces['f'][0], self.faces['l'][0], self.faces['b'][0] = self.faces['b'][0], self.faces['r'][0], self.faces['f'][0], self.faces['l'][0]
+            elif move == "u'":
+                self.faces['r'][0], self.faces['f'][0], self.faces['l'][0], self.faces['b'][0] = self.faces['f'][0], self.faces['l'][0], self.faces['b'][0], self.faces['r'][0]
+            elif move == 'f':
+                (self.faces['u'][2],
+                [self.faces['r'][0][0], self.faces['r'][1][0], self.faces['r'][2][0]],
+                self.faces['d'][0],
+                [self.faces['l'][0][2], self.faces['l'][1][2], self.faces['l'][2][2]]) = (
+                    [self.faces['l'][2][2], self.faces['l'][1][2], self.faces['l'][0][2]],
+                    self.faces['u'][2],
+                    [self.faces['r'][2][0], self.faces['r'][1][0], self.faces['r'][0][0]],
+                    self.faces['d'][0]
+                )
+            elif move == "f'":
+                (self.faces['u'][2],
+                [self.faces['r'][2][0], self.faces['r'][1][0], self.faces['r'][0][0]],
+                self.faces['d'][0],
+                [self.faces['l'][2][2], self.faces['l'][1][2], self.faces['l'][0][2]]) = (
+                    [self.faces['r'][0][0], self.faces['r'][1][0], self.faces['r'][2][0]],
+                    self.faces['d'][0],
+                    [self.faces['l'][0][2], self.faces['l'][1][2], self.faces['l'][2][2]],
+                    self.faces['u'][2]
+                )
+            elif move == 'r':
+                ([self.faces['u'][0][2], self.faces['u'][1][2], self.faces['u'][2][2]],
+                [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
+                [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]],
+                [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]]) = (
+                    [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]],
+                    [self.faces['u'][2][2], self.faces['u'][1][2], self.faces['u'][0][2]],
+                    [self.faces['b'][2][0], self.faces['b'][1][0], self.faces['b'][0][0]],
+                    [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]]
+                )
+            elif move == "r'":
+                ([self.faces['u'][2][2], self.faces['u'][1][2], self.faces['u'][0][2]],
+                [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
+                [self.faces['d'][0][2], self.faces['d'][1][2], self.faces['d'][2][2]],
+                [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]]) = (
+                    [self.faces['b'][0][0], self.faces['b'][1][0], self.faces['b'][2][0]],
+                    [self.faces['d'][2][2], self.faces['d'][1][2], self.faces['d'][0][2]],
+                    [self.faces['f'][0][2], self.faces['f'][1][2], self.faces['f'][2][2]],
+                    [self.faces['u'][0][2], self.faces['u'][1][2], self.faces['u'][2][2]]
+                )
+            elif move == 'b':
+                (self.faces['u'][0],
+                [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
+                [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
+                [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]]) = (
+                    [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
+                    [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
+                    [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]],
+                    self.faces['u'][0]
+                )
+            elif move == "b'":
+                (self.faces['u'][0],
+                [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
+                [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]],
+                [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]]) = (
+                    [self.faces['l'][2][0], self.faces['l'][1][0], self.faces['l'][0][0]],
+                    self.faces['u'][0],
+                    [self.faces['r'][0][2], self.faces['r'][1][2], self.faces['r'][2][2]],
+                    [self.faces['d'][2][2], self.faces['d'][2][1], self.faces['d'][2][0]]
+                )
+            elif move == 'l':
+                ([self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
+                [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
+                [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
+                [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]]) = (
+                    [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]],
+                    [self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
+                    [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
+                    [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]]
+                )
+            elif move == "l'":
+                ([self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]],
+                [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
+                [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
+                [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]]) = (
+                    [self.faces['f'][0][0], self.faces['f'][1][0], self.faces['f'][2][0]],
+                    [self.faces['d'][0][0], self.faces['d'][1][0], self.faces['d'][2][0]],
+                    [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]],
+                    [self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]]
+                )
+            elif move == 'd':
+                self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['f'][2], self.faces['l'][2], self.faces['b'][2], self.faces['r'][2]
+            elif move == "d'":
+                self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['b'][2], self.faces['r'][2], self.faces['f'][2], self.faces['l'][2]
 
         self.calc_fitness()
 
@@ -138,8 +142,23 @@ class Cube:
         moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'", 'u2', 'b2', 'f2', 'l2', 'r2', 'd2']
         number_moves = random.randint(20, 30)
 
+        scramble_moves = []
+
+        m = ["r'", "u2", "f2", "r'", "b2", "d'", "f'", "l'", "d'", "f", "u2", "f2", "d2", "f'", "r2", "f'", "r2", "b2", "d2", "b", "u2"]
+        # m = ["r'", "d'", "l'", "b2", "l'", "u", "f2"]
+
+        for move in m:
+            print("-----------------------", move)
+            self.make_move(move)
+            scramble_moves.append(move)
+            # self.print()
+
         # for i in range(number_moves):
-        #     self.make_move(moves[random.randint(0, len(moves)-1)])
+        #     move = moves[random.randint(0, len(moves)-1)]
+        #     self.make_move(move)
+        #     scramble_moves.append(move)
+
+        print("Scramble ", scramble_moves)
 
         # Test scramble 1
         # self.make_move('r')
@@ -157,10 +176,10 @@ class Cube:
         # self.make_move('u')
 
         # Test scramble 3x2 + pair blocks 2
-        self.make_move('r2')
-        self.make_move('u')
-        self.make_move('l2')
-        self.make_move("u'")
+        # self.make_move('r2')
+        # self.make_move('u')
+        # self.make_move('l2')
+        # self.make_move("u'")
         
 
         self.print()
@@ -321,18 +340,18 @@ class Cube:
     def calc_fitness(self):
         max_fitness = 9 * BLOCK_COST * 6
         fit = 0
-        fit += self.calc_lines_fitness()
-        fit += self.calc_pairs_fitness()
-        fit += self.calc_blocks_fitness()
+        # fit += self.calc_lines_fitness()
+        # fit += self.calc_pairs_fitness()
+        # fit += self.calc_blocks_fitness()
 
-        # for face_label in self.faces:
-        #     face = self.faces[face_label]
-        #     center_piece = face[1][1]
+        for face_label in self.faces:
+            face = self.faces[face_label]
+            center_piece = face[1][1]
 
-        #     for row in face:
-        #         for piece in row:
-        #             if not piece == center_piece:
-        #                 fit += 1
+            for row in face:
+                for piece in row:
+                    if not piece == center_piece:
+                        fit += 1
 
 
         # for face_label in self.faces:
