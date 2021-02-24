@@ -1,7 +1,17 @@
+from cube import Cube
+from copy import deepcopy
 
-def calc(expressao):
-    res = eval(expressao)
-    return res
+c = Cube()
+c.scramble()
+c2 = deepcopy(c)
+print("-----------------")
+c.print()
+print("-----------------")
+c2.print()
 
-a = "1+2*2*5"
-print(calc(a))
+# c2.make_move('u2')
+c2.faces['u'][0][0] = 2000
+print("-----------------")
+c2.print()
+print("-----------------")
+c.print()
