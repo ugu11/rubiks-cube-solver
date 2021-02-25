@@ -5,15 +5,15 @@ from math import exp
 
 BLOCK_COST = 6
 LINE_COST = 3
-PAIR_BLOCK_COST = 0
-LINE_BLOCK_COST = 0
+PAIR_BLOCK_COST = 2
+LINE_BLOCK_COST = 4
 PAIR_COST = 1
 
 class Cube():
     faces = {}
     fitness = 0
     max_fitness = 9 * BLOCK_COST * 6
-    n_moves = 0
+    n_moves = 1
     oposite_face = {
         'u': 'd',
         'd': 'u',
@@ -26,7 +26,7 @@ class Cube():
     def __init__(self, cube=None):
         if cube == None:
             self.generate_cube()
-            # self.calc_fitness()
+            self.calc_fitness()
         else:
             self.fitness = cube.fitness
             self.faces = deepcopy(cube.faces)
@@ -37,11 +37,19 @@ class Cube():
         # for i in range(len(faces_labels)):
         for i in faces_labels:
             # face = [[i*10+0, i*10+1, i*10+2], [i*10+3, i*10+4, i*10+5], [i*10+6, i*10+7, i*10+8]]
-            face = [[i, i, i], [i, i, i], [i, i, i]]
+            face = [] #[[i, i, i], [i, i, i], [i, i, i]]
+            for r in range(3):
+                row = []
+                for c in range(3):
+                    row.append(i + str(r) + str(c))
+                face.append(row)
+            
             self.faces[i] = face
 
     def make_move(self, move):
         # faces_labels = ['u', 'f', 'r', 'b', 'l', 'd']
+        if move[0] == 'n': return
+
         face = self.faces[move[0]]
 
 
@@ -231,10 +239,10 @@ class Cube():
         for face in self.faces:
             for i in range(0, 3):
                 # Check for horizontal lines
-                if self.check_is_line(self.faces[face], (i, 0), (i, 2)) and self.faces[face][1][1] != self.faces[face][i][0]:
+                if self.check_is_line(self.faces[face], (i, 0), (i, 2)) and self.faces[face][1][1][0] != self.faces[face][i][0][0]:
                     fit += LINE_COST * 3
                 # Check for vertival lines
-                if self.check_is_line(self.faces[face], (0, i), (2, i)) and not self.faces[face][1][1] == self.faces[face][0][i]:
+                if self.check_is_line(self.faces[face], (0, i), (2, i)) and not self.faces[face][1][1][0] == self.faces[face][0][i][0]:
                     fit += LINE_COST * 3
 
         return fit
@@ -244,7 +252,7 @@ class Cube():
         i2, j2 = line_end
         is_horizontal = abs(i1 - i2) == 0 and abs(j1 - j2) == 2
         is_vertical = abs(i1 - i2) == 2 and abs(j1 - j2) == 0
-        center_piece = face[1][1]
+        center_piece = face[1][1][0]
 
 
         if is_horizontal:
@@ -252,7 +260,7 @@ class Cube():
             left_edge_face = self.faces[self.get_face_on_left(center_piece)][i1][2]
             right_edge_face = self.faces[self.get_face_on_right(center_piece)][i1][0]
 
-            is_line_valid = line[0] ==  line[1] and line[0] ==  line[2]
+            is_line_valid = line[0][0] ==  line[1][0] and line[0][0] ==  line[2][0]
 
             if i1 == 0: # is top line
                 if center_piece == 'f':
@@ -268,7 +276,7 @@ class Cube():
                 elif center_piece == 'd':
                     adjacent_line = self.faces['f'][2]
 
-                is_adjacent_line_valid = adjacent_line[0] == adjacent_line[1] and adjacent_line[0] == adjacent_line[2]
+                is_adjacent_line_valid = adjacent_line[0][0] == adjacent_line[1][0] and adjacent_line[0][0] == adjacent_line[2][0]
             elif i1 == 2: # is bottom line
                 if center_piece == 'f':
                     adjacent_line = self.faces['d'][0]
@@ -283,15 +291,15 @@ class Cube():
                 elif center_piece == 'd':
                     adjacent_line = self.faces['b'][2]
 
-                is_adjacent_line_valid = adjacent_line[0] == adjacent_line[1] and adjacent_line[0] == adjacent_line[2]
+                is_adjacent_line_valid = adjacent_line[0][0] == adjacent_line[1][0] and adjacent_line[0][0] == adjacent_line[2][0]
             else: is_adjacent_line_valid = True
 
-            return is_line_valid and is_adjacent_line_valid and left_edge_face == self.oposite_face[right_edge_face]
+            return is_line_valid and is_adjacent_line_valid and left_edge_face[0] == self.oposite_face[right_edge_face[0]]
 
         elif is_vertical:
             line = [face[i][j1] for i in range(len(face))]
 
-            is_line_valid = line[0] ==  line[1] and line[0] ==  line[2]
+            is_line_valid = line[0][0] ==  line[1][0] and line[0][0] ==  line[2][0]
 
             if j1 == 0: # is left line
                 if center_piece == 'u':
@@ -319,7 +327,7 @@ class Cube():
                         top_edge_face = self.faces['u'][0][0]
                         bottom_edge_face = self.faces['d'][2][0]
 
-                is_adjacent_line_valid = adjacent_line[0] == adjacent_line[1] and adjacent_line[0] == adjacent_line[2]
+                is_adjacent_line_valid = adjacent_line[0][0] == adjacent_line[1][0] and adjacent_line[0][0] == adjacent_line[2][0]
             elif j1 == 2: # is right line
                 if center_piece == 'u':
                     adjacent_line = self.faces['r'][0]
@@ -346,7 +354,7 @@ class Cube():
                         top_edge_face = self.faces['u'][2][0]
                         bottom_edge_face = self.faces['d'][0][0]
 
-                is_adjacent_line_valid = adjacent_line[0] == adjacent_line[1] and adjacent_line[0] == adjacent_line[2]
+                is_adjacent_line_valid = adjacent_line[0][0] == adjacent_line[1][0] and adjacent_line[0][0] == adjacent_line[2][0]
             else:
                 is_adjacent_line_valid = True
                 if center_piece == 'u':
@@ -369,7 +377,7 @@ class Cube():
                         top_edge_face = self.faces['u'][1][0]
                         bottom_edge_face = self.faces['d'][1][0]
 
-            return is_line_valid and is_adjacent_line_valid and top_edge_face == self.oposite_face[bottom_edge_face]
+            return is_line_valid and is_adjacent_line_valid and top_edge_face[0] == self.oposite_face[bottom_edge_face[0]]
 
 
         return False
@@ -391,65 +399,65 @@ class Cube():
         elif face_label == 'd': return 'r'
 
     def check_is_pair(self, face, pos_piece1, pos_piece2):
-        center_piece = face[1][1]
+        center_piece = face[1][1][0]
         i1, j1 = pos_piece1
         i2, j2 = pos_piece2
-        is_pair_on_curr_face = face[i1][j1] == face[i2][j2]
+        is_pair_on_curr_face = face[i1][j1][0] == face[i2][j2][0]
 
         if j1 == 1 and j2 == 1 or i1 == 1 and i2 == 1:
             return is_pair_on_curr_face
         elif i1 == 0 and i2 == 0:
             if center_piece == 'f':
-                is_pair_on_top_face = self.faces['u'][2][j1] == self.faces['u'][2][j2]
+                is_pair_on_top_face = self.faces['u'][2][j1][0] == self.faces['u'][2][j2][0]
             elif center_piece == 'b':
-                is_pair_on_top_face = self.faces['u'][0][2-j1] == self.faces['u'][0][2-j2]
+                is_pair_on_top_face = self.faces['u'][0][2-j1][0] == self.faces['u'][0][2-j2][0]
             elif center_piece == 'l':
-                is_pair_on_top_face = self.faces['u'][j1][0] == self.faces['u'][j2][0]
+                is_pair_on_top_face = self.faces['u'][j1][0][0] == self.faces['u'][j2][0][0]
             elif center_piece == 'r':
-                is_pair_on_top_face = self.faces['u'][2-j1][2] == self.faces['u'][2-j2][2]
+                is_pair_on_top_face = self.faces['u'][2-j1][2][0] == self.faces['u'][2-j2][2][0]
             elif center_piece == 'u':
-                is_pair_on_top_face = self.faces['b'][0][2-j1] == self.faces['b'][0][2-j2]
+                is_pair_on_top_face = self.faces['b'][0][2-j1][0] == self.faces['b'][0][2-j2][0]
             elif center_piece == 'd':
-                is_pair_on_top_face = self.faces['f'][2][j1] == self.faces['f'][2][j2]
+                is_pair_on_top_face = self.faces['f'][2][j1][0] == self.faces['f'][2][j2][0]
                 
 
             if is_pair_on_curr_face and is_pair_on_top_face: return True
             else: return False
         elif i1 == 2 and i2 == 2:
             if center_piece == 'f':
-                is_pair_on_bottom_face = self.faces['d'][0][j1] == self.faces['d'][0][j2]
+                is_pair_on_bottom_face = self.faces['d'][0][j1][0] == self.faces['d'][0][j2][0]
             elif center_piece == 'b':
-                is_pair_on_bottom_face = self.faces['d'][2][2-j1] == self.faces['d'][2][2-j2]
+                is_pair_on_bottom_face = self.faces['d'][2][2-j1][0] == self.faces['d'][2][2-j2]
             elif center_piece == 'l':
-                is_pair_on_bottom_face = self.faces['d'][2-j1][0] == self.faces['d'][2-j2][0]
+                is_pair_on_bottom_face = self.faces['d'][2-j1][0][0] == self.faces['d'][2-j2][0][0]
             elif center_piece == 'r':
-                is_pair_on_bottom_face = self.faces['d'][j1][2] == self.faces['d'][j2][2]
+                is_pair_on_bottom_face = self.faces['d'][j1][2][0] == self.faces['d'][j2][2][0]
             elif center_piece == 'u':
-                is_pair_on_bottom_face = self.faces['f'][0][j1] == self.faces['f'][0][j2]
+                is_pair_on_bottom_face = self.faces['f'][0][j1][0] == self.faces['f'][0][j2][0]
             elif center_piece == 'd':
-                is_pair_on_bottom_face = self.faces['b'][2][2-j1] == self.faces['b'][2][2-j2]
+                is_pair_on_bottom_face = self.faces['b'][2][2-j1][0] == self.faces['b'][2][2-j2][0]
 
             if is_pair_on_curr_face and is_pair_on_bottom_face: return True
             else: return False
         elif j1 == 0 and j2 == 0:
             face_on_left = self.faces[self.get_face_on_left(center_piece)]
             if center_piece == 'u':
-                is_pair_on_left_face = face_on_left[0][i1] == face_on_left[0][i2]
+                is_pair_on_left_face = face_on_left[0][i1][0] == face_on_left[0][i2][0]
             elif center_piece == 'd':
-                is_pair_on_left_face = face_on_left[2][2-j1] == face_on_left[2][2-j2]
+                is_pair_on_left_face = face_on_left[2][2-j1][0] == face_on_left[2][2-j2][0]
             else:
-                is_pair_on_left_face = face_on_left[i1][2] == face_on_left[i2][2]
+                is_pair_on_left_face = face_on_left[i1][2][0] == face_on_left[i2][2][0]
             
             if is_pair_on_curr_face and is_pair_on_left_face: return True
             else: return False
         elif j1 == 2 and j2 == 2:
             face_on_right = self.faces[self.get_face_on_right(center_piece)]
             if center_piece == 'u':
-                is_pair_on_right_face = face_on_right[0][2-i1] == face_on_right[0][2-i2]
+                is_pair_on_right_face = face_on_right[0][2-i1][0] == face_on_right[0][2-i2][0]
             elif center_piece == 'd':
-                is_pair_on_right_face = face_on_right[2][j1] == face_on_right[2][j2]
+                is_pair_on_right_face = face_on_right[2][j1][0] == face_on_right[2][j2][0]
             else:
-                is_pair_on_right_face = face_on_right[i1][0] == face_on_right[i2][0]
+                is_pair_on_right_face = face_on_right[i1][0][0] == face_on_right[i2][0][0]
 
             if is_pair_on_curr_face and is_pair_on_right_face: return True
             else: return False
@@ -464,59 +472,59 @@ class Cube():
             face = self.faces[face_label]
             for i in range(0, 3):
                 # Check for horizontal pairs
-                if (self.check_is_pair(face, (i, 0), (i, 1)) or self.check_is_pair(face, (i, 1), (i, 2))) and not face[i][0] == face[i][2] and not face[1][1] == face[i][1]:
+                if (self.check_is_pair(face, (i, 0), (i, 1)) or self.check_is_pair(face, (i, 1), (i, 2))) and not face[i][0][0] == face[i][2][0] and not face[1][1][0] == face[i][1][0]:
                     fit += 2 * PAIR_COST
                 # Check for vertical pairs
-                if (self.check_is_pair(face, (0, i), (1, i)) or self.check_is_pair(face, (1, i), (2, i))) and not face[0][i] == face[2][i] and not face[1][1] == face[1][i]:
+                if (self.check_is_pair(face, (0, i), (1, i)) or self.check_is_pair(face, (1, i), (2, i))) and not face[0][i][0] == face[2][i][0] and not face[1][1][0] == face[1][i][0]:
                     fit += 2 * PAIR_COST
         return fit
 
     def check_is_face_solved(self, face):
-        return self.check_is_line(face, (0, 0), (0, 2)) and self.check_is_line(face, (1, 0), (1, 2)) and self.check_is_line(face, (2, 0), (2, 2)) and face[0] == face[1] and face[1] == face[2]
+        return self.check_is_line(face, (0, 0), (0, 2)) and self.check_is_line(face, (1, 0), (1, 2)) and self.check_is_line(face, (2, 0), (2, 2)) and face[0][1][0] == face[1][1][0] and face[1][1][0] == face[2][1][0]
 
     def get_n_correct_pieces(self, face):
-        center_piece = face[1][1]
+        center_piece = face[1][1][0]
         n_correct_pieces = 0
 
         for row in face:
             for piece in row:
-                if piece == center_piece:
+                if piece[0] == center_piece:
                     n_correct_pieces += 1
 
         return n_correct_pieces
 
     def calc_3x2p_blocks_fitness(self, face):
         fit = 0
-        center_piece = face[1][1]
+        center_piece = face[1][1][0]
         # Check for horizontal middle line
         if self.check_is_line(face, (1, 0), (1, 2)):
             # Check for horizontal top line
-            if self.check_is_line(face, (0, 0), (0, 2)) and face[0][0] == center_piece:
+            if self.check_is_line(face, (0, 0), (0, 2)) and face[0][0][0] == center_piece:
                 fit += 6 * BLOCK_COST
                 # Check for pair on bottom row
-                if (self.check_is_pair(face, (2, 0), (2, 1)) or self.check_is_pair(face, (2, 1), (2, 2))) and face[2][1] == center_piece:
+                if (self.check_is_pair(face, (2, 0), (2, 1)) or self.check_is_pair(face, (2, 1), (2, 2))) and face[2][1][0] == center_piece:
                     fit += 2 * BLOCK_COST
 
             # Check for horizontal bottom line
-            elif self.check_is_line(face, (2, 0), (2, 2)) and face[2][0] == center_piece:
+            elif self.check_is_line(face, (2, 0), (2, 2)) and face[2][0][0] == center_piece:
                 fit += 6 * BLOCK_COST
                 # Check for pair on top row
-                if (self.check_is_pair(face, (0, 0), (0, 1)) or self.check_is_pair(face, (0, 1), (0, 2))) and face[0][1] == center_piece:
+                if (self.check_is_pair(face, (0, 0), (0, 1)) or self.check_is_pair(face, (0, 1), (0, 2))) and face[0][1][0] == center_piece:
                     fit += 2 * BLOCK_COST
 
         # Check for vertical middle line
         elif self.check_is_line(face, (0, 1), (2, 1)):
             # Check for vertical left line
-            if self.check_is_line(face, (0, 0), (2, 0)) and face[0][0] == center_piece:
+            if self.check_is_line(face, (0, 0), (2, 0)) and face[0][0][0] == center_piece:
                 fit += 6 * BLOCK_COST
                 # Check for pair on right column
-                if (self.check_is_pair(face, (0, 2), (1, 2)) or self.check_is_pair(face, (1, 2), (2, 2))) and face[1][2] == center_piece:
+                if (self.check_is_pair(face, (0, 2), (1, 2)) or self.check_is_pair(face, (1, 2), (2, 2))) and face[1][2][0] == center_piece:
                     fit += 2 * BLOCK_COST
             # Check for vertical right line
-            elif self.check_is_line(face, (0, 2), (2, 2)) and face[0][2] == center_piece:
+            elif self.check_is_line(face, (0, 2), (2, 2)) and face[0][2][0] == center_piece:
                 fit += 6 * BLOCK_COST
                 # Check for pair on left column
-                if (self.check_is_pair(face, (0, 0), (1, 0)) or self.check_is_pair(face, (1, 0), (2, 0))) and face[1][0] == center_piece:
+                if (self.check_is_pair(face, (0, 0), (1, 0)) or self.check_is_pair(face, (1, 0), (2, 0))) and face[1][0][0] == center_piece:
                     fit += 2 * BLOCK_COST
         # n_correct_pieces = self.get_n_correct_pieces(face)
 
@@ -528,18 +536,18 @@ class Cube():
 
     def calc_2x2_blocks_fitness(self, face):
         fit = 0
-        center_piece = face[1][1]
+        center_piece = face[1][1][0]
 
         # Check for block on the left side of the face
         if self.check_is_pair(face, (1, 0), (1, 1)):
-            if(self.check_is_pair(face, (0, 0), (0, 1)) and not face[0][2] == center_piece and not face[2][0] == center_piece or
-            self.check_is_pair(face, (2, 0), (2, 1)) and not face[2][2] == center_piece and not face[0][0] == center_piece):
+            if(self.check_is_pair(face, (0, 0), (0, 1)) and not face[0][2][0] == center_piece and not face[2][0][0] == center_piece or
+            self.check_is_pair(face, (2, 0), (2, 1)) and not face[2][2][0] == center_piece and not face[0][0][0] == center_piece):
                 fit += 2 * BLOCK_COST
 
         # Check for block on the right side of the face
         if self.check_is_pair(face, (1, 1), (1, 2)):
-            if(self.check_is_pair(face, (0, 1), (0, 2)) and not face[0][0] == center_piece and not face[2][2] == center_piece or
-            self.check_is_pair(face, (2, 1), (2, 2)) and not face[2][0] == center_piece and not face[0][2] == center_piece):
+            if(self.check_is_pair(face, (0, 1), (0, 2)) and not face[0][0][0] == center_piece and not face[2][2][0] == center_piece or
+            self.check_is_pair(face, (2, 1), (2, 2)) and not face[2][0][0] == center_piece and not face[0][2][0] == center_piece):
                 fit += 2 * BLOCK_COST
 
         if not fit == 0:
@@ -613,23 +621,25 @@ class Cube():
         fit += self.calc_pairs_fitness()
 
         # fit += self.n_moves
+
+        # self.max_fitness = 9 * 6
     
         # for face_label in self.faces:
         #     face = self.faces[face_label]
-        #     center_piece = face[1][1]
-
-        #     for row in face:
-        #         for piece in row:
-        #             if not piece == center_piece:
+        #     for row in range(3):
+        #         for col in range(3):
+        #             piece = face[row][col]
+        #             if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
         #                 fit += 1
 
         # if self.n_moves > 0:
         #     self.fitness = ((self.max_fitness - fit) / self.n_moves * 0.0001)
         #     # self.fitness = (fit / self.n_moves) - 1
         # else:
-        #     self.fitness = self.max_fitness - fit
-        #     # self.fitness = fit
+        #     self.fitness = fit
 
-        self.fitness = self.max_fitness - fit
+        # self.fitness = self.max_fitness - fit
+        self.fitness =  self.max_fitness - fit
+        # self.fitness = fit
 
         return self.fitness
