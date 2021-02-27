@@ -14,6 +14,7 @@ class Cube():
     fitness = 0
     max_fitness = 9 * BLOCK_COST * 6
     n_moves = 1
+    available_moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'", 'u2', 'b2', 'f2', 'l2', 'r2', 'd2', 'n']
     oposite_face = {
         'u': 'd',
         'd': 'u',
@@ -21,6 +22,7 @@ class Cube():
         'r': 'l',
         'f': 'b',
         'b': 'f',
+        'n': 'm'
     }
 
     def __init__(self, cube=None):
@@ -34,10 +36,8 @@ class Cube():
     def generate_cube(self):
         faces_labels = ['u', 'f', 'r', 'b', 'l', 'd']
 
-        # for i in range(len(faces_labels)):
         for i in faces_labels:
-            # face = [[i*10+0, i*10+1, i*10+2], [i*10+3, i*10+4, i*10+5], [i*10+6, i*10+7, i*10+8]]
-            face = [] #[[i, i, i], [i, i, i], [i, i, i]]
+            face = []
             for r in range(3):
                 row = []
                 for c in range(3):
@@ -47,9 +47,7 @@ class Cube():
             self.faces[i] = face
 
     def make_move(self, move):
-        # faces_labels = ['u', 'f', 'r', 'b', 'l', 'd']
         if move[0] == 'n': return
-
         face = self.faces[move[0]]
 
 
@@ -168,54 +166,21 @@ class Cube():
         number_moves = random.randint(20, 30)
 
         scramble_moves = []
-
-        # m = ["r'", "u2", "f2", "r'", "b2", "d'", "f'", "l'", "d'", "f", "u2", "f2", "d2", "f'", "r2", "f'", "r2", "b2", "d2", "b", "u2"]
-        # F' D F B D R U2 L' D2 R2 D2 F B U2 B D2 B' R2 F2 R2
-        # m = ["f'", "d", "f", "b", "d", "r", "u2", "l'", "d2", "r2", "d2", "f", "b", "u2", "b", "d2", "b'", "r2", "f2", "r2"]
-        # m = ["u", "l2", "r2", "u'", "l2", "r2", "u2", "b2", "l2", "d'", "r2", "d", "l", "d", "b", "u2", "b", "l", "b", "r2", "b2"]
-
-        m = ["b2", "u", "d2", "f", "r2", "f2", "d2", "u2", "f'", "u2", "f2", "u2", "r2", "d2", "r", "b'", "d'", "u2", "b'", "r'", "b2"]
-        # Pair check test
-        # m = ["b2", "u", "d2", "f", "r2", "f2", "d2", "u2", "f'", "u2", "f2", "u2", "r2", "d2", "r", "b'", "d'", "u2", "b'", "r'", "b2", "l'"]
-        # m = ["r2", "b2", "l2", "f2", "r2", "f"]
-        # m = ["r'", "d'", "l'", "b2", "l'", "u", "f2"]
-
-        for move in m:
-            print("-----------------------", move)
-            self.make_move(move)
-            scramble_moves.append(move)
-            # self.print()
-
-        # for i in range(number_moves):
-        #     move = moves[random.randint(0, len(moves)-1)]
+        # m = ["b2", "u", "d2", "f", "r2", "f2", "d2", "u2", "f'", "u2", "f2", "u2", "r2", "d2", "r", "b'", "d'", "u2", "b'", "r'", "b2"]
+        # for move in m:
+        #     print("-----------------------", move)
         #     self.make_move(move)
         #     scramble_moves.append(move)
+        #     # self.print()
+
+        for i in range(number_moves):
+            move = moves[random.randint(0, len(moves)-1)]
+            self.make_move(move)
+            scramble_moves.append(move)
 
         print("Scramble ", scramble_moves)
-
-        # Test scramble 1
-        # self.make_move('r')
-        # self.make_move('u')
-        # self.make_move('l')
-        # self.make_move('d')
-        # self.make_move('f')
-        # self.make_move("d'")
-
-        # Test scramble 3x2 blocks 1
-        # self.make_move('r')
-        # self.make_move('r')
-        # self.make_move('u')
-        # self.make_move('l')
-        # self.make_move('u')
-
-        # Test scramble 3x2 + pair blocks 2
-        # self.make_move('r2')
-        # self.make_move('u')
-        # self.make_move('l2')
-        # self.make_move("u'")
         
         self.n_moves = 0
-        # self.calc_fitness()
         self.print()
         
         return self.faces
@@ -526,12 +491,6 @@ class Cube():
                 # Check for pair on left column
                 if (self.check_is_pair(face, (0, 0), (1, 0)) or self.check_is_pair(face, (1, 0), (2, 0))) and face[1][0][0] == center_piece:
                     fit += 2 * BLOCK_COST
-        # n_correct_pieces = self.get_n_correct_pieces(face)
-
-        # if n_correct_pieces >= 6:
-        #     fit += n_correct_pieces * BLOCK_COST
-
-
         return fit
 
     def calc_2x2_blocks_fitness(self, face):
@@ -609,9 +568,6 @@ class Cube():
 
             fit += big_blocks_fit + small_blocks_fit + line_blocks_fit + pair_blocks_fit
 
-            # print(face[1][1], big_blocks_fit, small_blocks_fit, line_blocks_fit, pair_blocks_fit, fit)
-
-
         return fit
 
     def calc_fitness(self):
@@ -619,8 +575,6 @@ class Cube():
         fit += self.calc_blocks_fitness()
         fit += self.calc_lines_fitness()
         fit += self.calc_pairs_fitness()
-
-        # fit += self.n_moves
 
         # self.max_fitness = 9 * 6
     
@@ -632,14 +586,6 @@ class Cube():
         #             if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
         #                 fit += 1
 
-        # if self.n_moves > 0:
-        #     self.fitness = ((self.max_fitness - fit) / self.n_moves * 0.0001)
-        #     # self.fitness = (fit / self.n_moves) - 1
-        # else:
-        #     self.fitness = fit
-
-        # self.fitness = self.max_fitness - fit
-        self.fitness =  self.max_fitness - fit
-        # self.fitness = fit
+        self.fitness = self.max_fitness - fit
 
         return self.fitness

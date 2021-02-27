@@ -26,7 +26,7 @@ def roullete_selection(cube, population):
     # print(normalized_fits)
 
     # Spin roullete
-    for i in range(int(POP_SIZE)):
+    for i in range(int(len(population))):
         roullete_num = random()#uniform(0.8, 1)
         selected_offspring = None
 
@@ -52,11 +52,11 @@ def truncated_selection(cube, population):
 
 def tournment_selection(cube, population, tournment_size):
     selected = []
-    k = 0.65
+    k = 0.85
 
     for i in range(0, len(population)):
         # participants = []
-        best_chromossome = None
+        best_chromossome = population[0]
         random_factor = random()
 
         for h in range(0, tournment_size):
