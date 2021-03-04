@@ -6,10 +6,10 @@ from copy import deepcopy
 
 
 N_GENERATIONS = 3000
-POP_SIZE = 300
-CROSSOVER_PROB = 0.6
+POP_SIZE = 400
+CROSSOVER_PROB = 0.7
 MUTATION_PROB = 0.1
-CHROMOSSOME_SIZE = 22
+CHROMOSSOME_SIZE = 20
 
 
 def get_fit(chromossome):
@@ -33,6 +33,8 @@ def generate_chromossome(size=None):
             move = moves[randint(0, len(moves)-1)]
         
         chromossome.append(move)
+
+    # chromossome += ['n'] * (CHROMOSSOME_SIZE - 20)
 
     return {
         'fit': 0,

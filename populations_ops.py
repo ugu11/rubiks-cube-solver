@@ -37,14 +37,16 @@ def social_disaster(cube, population):
         if 'n' in chr2['val']:
             chr2_n_pos = chr2['val'].index('n')
             chr2['val'] = chr2['val'][:chr2_n_pos]
-        
+
         if chr1 == chr2:
             group_count += 1
         else:
             if group_count >= 2:
+                # print("Social disaster")
                 new_population.append(population[first_appearance_index])
                 for h in range(group_count):
-                    new_chromossome1 = generate_chromossome()
+                    new_chromossome1 = mutation_by_random_generation(cube, population[first_appearance_index])
+                    # new_chromossome1 = mutation_by_random_generation
                     evaluate_solution(cube, new_chromossome1)
                     new_population.append(new_chromossome1)
             else:
@@ -52,12 +54,11 @@ def social_disaster(cube, population):
             first_appearance_index = i
             group_count = 0
         
-
         i += 1
                     
     new_population += population[first_appearance_index:i]                    
 
-    return new_population[:POP_SIZE]
+    return new_population#[:POP_SIZE]
 
 
 def random_kill(cube, population, n_kill):
@@ -137,7 +138,7 @@ def repair_chromossome(chromossome):
             or ("'" in chromossome_val[i] and "'" not in chromossome_val[i+1] and not "2" in chromossome_val[i+1])):
                 chromossome_val[i] = 'n'
                 chromossome_val[i+1] = 'n'
-        elif (i > len(chromossome_val)-2
+        elif (i < len(chromossome_val)-2
         and chromossome_val[i][0] != 'n' and chromossome_val[i+2][0] != 'n'
         and (chromossome_val[i+1][0] == 'n' or chromossome_val[i][0] == cube.oposite_face[chromossome_val[i+1][0]]) and i+2 < len(chromossome)-1):
             if '2' in chromossome_val[i]:
@@ -176,8 +177,24 @@ def repair_chromossome(chromossome):
             
         i += 1
 
-    chromossome_val.sort(key=is_move_none)                
-    chromossome['val'] = chromossome_val
+    chromossome_val.sort(key=is_move_none)
+    while 'n' in chromossome_val:
+        chromossome_val.remove('n')
+
+    last_index = len(chromossome_val)-1
+    if chromossome_val[last_index] == chromossome_val[last_index-1]:
+        if '2' in chromossome_val[last_index] or (("'" in chromossome_val[last_index-1] and "'" not in chromossome_val[last_index])
+        or "'" not in chromossome_val[last_index-1] and "'" in chromossome_val[last_index]):
+            chromossome_val[last_index-1] = 'n'
+            chromossome_val[last_index] = 'n'
+        else:
+            chromossome_val[last_index-1] = chromossome_val[last_index-1][0] + '2'
+            chromossome_val[last_index] = 'n'
+
+    if chromossome['fit'] <= 185:
+        chromossome['val'] = chromossome_val + ['n'] * (randint(0, 3))
+    else:
+        chromossome['val'] = chromossome_val
 
     return chromossome
 
@@ -193,20 +210,24 @@ def fix_empty_moves(chromossome):
         if chromossome_val[i] == 'n':
             n_count += 1
         else: break
-    last_move = chromossome_val[len(chromossome_val) - n_count - 1]
-    second_last_move = chromossome_val[len(chromossome_val) - n_count - 2]
+    # last_move = chromossome_val[len(chromossome_val) - n_count - 1]
+    # second_last_move = chromossome_val[len(chromossome_val) - n_count - 2]
+    new_chrom = {
+        'fit': 0,
+        'val': chromossome_val[:len(chromossome_val) - n_count] #[:len(chromossome_val) - n_count + i + 1]
+    }
 
-    for i in range(n_count):
-        new_move = last_move
-        while (new_move[0] == last_move[0] or (new_move[0] == second_last_move[0] and last_move[0] == cube.oposite_face[new_move[0]])):
-            new_move = moves[randint(0, len(moves)-1)]
-        chromossome_val[len(chromossome_val) - n_count + i] = new_move
-        new_chrom = {
-            'fit': 0,
-            'val': deepcopy(chromossome_val)#[:len(chromossome_val) - n_count + i + 1]
-        }
+    # for i in range(n_count):
+    #     new_move = last_move
+    #     while (new_move[0] == last_move[0] or (new_move[0] == second_last_move[0] and last_move[0] == cube.oposite_face[new_move[0]])):
+    #         new_move = moves[randint(0, len(moves)-1)]
+    #     chromossome_val[len(chromossome_val) - n_count + i] = new_move
+    #     new_chrom = {
+    #         'fit': 0,
+    #         'val': deepcopy(chromossome_val)#[:len(chromossome_val) - n_count + i + 1]
+    #     }
 
-        new_chromossomes.append(new_chrom)
+    new_chromossomes.append(new_chrom)
 
     return new_chromossomes
 
@@ -223,3 +244,26 @@ def repair(population):
 
     return population
 
+def renovate_half(cube, population):
+    for i in range(2, len(population)):
+        population[i] = generate_chromossome()
+        evaluate_solution(cube, population[i])
+
+    return population
+
+def growup(cube, population):
+    new_population = []
+
+    for i in range(len(population)):
+        for h in range(400):
+            new_chrom_body = generate_chromossome(8)
+            new_chrom = {
+                'fit': 0,
+                'val': population[i]['val'] + new_chrom_body['val']
+            }
+
+            new_population.append(new_chrom)
+    
+    evaluate_pop(cube, new_population)
+
+    return population + new_population

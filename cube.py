@@ -166,21 +166,23 @@ class Cube():
         number_moves = random.randint(20, 30)
 
         scramble_moves = []
-        # m = ["b2", "u", "d2", "f", "r2", "f2", "d2", "u2", "f'", "u2", "f2", "u2", "r2", "d2", "r", "b'", "d'", "u2", "b'", "r'", "b2"]
-        # for move in m:
-        #     print("-----------------------", move)
-        #     self.make_move(move)
-        #     scramble_moves.append(move)
-        #     # self.print()
-
-        for i in range(number_moves):
-            move = moves[random.randint(0, len(moves)-1)]
+        m = ["b2", "u", "d2", "f", "r2", "f2", "d2", "u2", "f'", "u2", "f2", "u2", "r2", "d2", "r", "b'", "d'", "u2", "b'", "r'", "b2"]
+        for move in m:
+            # print("-----------------------", move)
             self.make_move(move)
             scramble_moves.append(move)
+            # self.print()
+
+        # for i in range(number_moves):
+        #     move = moves[random.randint(0, len(moves)-1)]
+        #     self.make_move(move)
+        #     scramble_moves.append(move)
 
         print("Scramble ", scramble_moves)
+
         
         self.n_moves = 0
+        self.calc_fitness()
         self.print()
         
         return self.faces
@@ -572,20 +574,32 @@ class Cube():
 
     def calc_fitness(self):
         fit = 0
-        fit += self.calc_blocks_fitness()
-        fit += self.calc_lines_fitness()
-        fit += self.calc_pairs_fitness()
 
-        # self.max_fitness = 9 * 6
-    
-        # for face_label in self.faces:
-        #     face = self.faces[face_label]
-        #     for row in range(3):
-        #         for col in range(3):
-        #             piece = face[row][col]
-        #             if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
-        #                 fit += 1
+        if self.fitness >= 180 or self.fitness == 0:
+            fit += self.calc_blocks_fitness()
+            fit += self.calc_lines_fitness()
+            fit += self.calc_pairs_fitness()
+            self.max_fitness = 9 * BLOCK_COST * 6
 
+        else:
+            if self.fitness >= 35:
+                self.max_fitness = (1 * 4 + 2 * 5) * 6
+            else:
+                self.max_fitness = 9 * 6
+        
+            for face_label in self.faces:
+                face = self.faces[face_label]
+                for row in range(3):
+                    for col in range(3):
+                        piece = face[row][col]
+                        if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
+                            if '1' in piece and self.fitness >= 35:
+                                fit += 2
+                            else:
+                                fit += 1
+
+        # fit += self.n_moves
+
+        # self.fitness = (self.max_fitness - fit) * (1/self.n_moves)
         self.fitness = self.max_fitness - fit
-
         return self.fitness

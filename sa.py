@@ -96,8 +96,11 @@ def simulated_anealing(cube):
     # s = "l2 u2 f2 u f2 r' u2 d f2 d2 u2 l d2 l r' b' d' u f2 l f r2 l2 b2 l b r' u2 l n n"
     # s = "l r' l2 f l2 d r d r' l' f' b l2 b' l' f r2 u' f' l d' b' d r' l' r' l r2"
     # s = "u f' r u' r' d' f r2 f u' r2 b' l2 r2 u' f' r b r' b' r2 f u' b d u' l2 u r b r2 b' u' d'"
-    s = "u' d u2 r d2 b f' r2 u' b' r' l' r2 u2 r u2 d2 b r2 f r l2 f2 b' r' l2 u' r2 l2 d2"
+    # s = "u' d u2 r d2 b f' r2 u' b' r' l' r2 u2 r u2 d2 b r2 f r l2 f2 b' r' l2 u' r2 l2 d2"
+    s = "b l2 d r' l f2 l2 u l' d' r' d' r b' u d b2 u' d' f' u f2 b2 u' d' b' d f2 u f2 u' b' l2 u' l2 d' r2 d b l u' l' u' b2 u d' r2 d"
     moves = s.split(" ")
+    # moves = ['u2', "d'", 'r', "u'", 'd', "b'", 'l2', 'u', 'f', 'r', "d'", 'f', "u'", "r'", 'u2', 'd', 'f2', 'l2', 'u', "b'", "l'", "f'", 'r', 'b', "r'", "l'", 'f', "r'", 'l', 'd2', 'r', 'f', 'l', 'f', "l'", 'f2']
+    # moves = ['d', 'f', 'd', 'b', 'r', "b'", "d'", 'f', "b'", 'r2', 'f2', 'b2', 'u', 'f', 'd2', 'l2', 'f', 'l2', 'f2', "b'", "r'", 'l2', 'u2', 'r', "d'", 'f2', 'u', 'd', "f'", "u'", 'f', 'n']
 
     for move in moves:
         best_cube.make_move(move)
@@ -118,7 +121,7 @@ def simulated_anealing(cube):
             neighbor, n_move = generate_neighbor(best_cube)
             neighbor_2moves, n2_moves = generate_neighbor_2moves(best_cube)
             neighbor_4moves, n4_moves = generate_neighbor_4moves(best_cube)
-            # n8, n8m = gen_8_moves(best_cube)
+            n8, n8m = gen_8_moves(best_cube)
             
             if neighbor_2moves.fitness <= neighbor_4moves.fitness:
                 selected_neighbor = neighbor_2moves
@@ -131,9 +134,9 @@ def simulated_anealing(cube):
                 selected_neighbor = neighbor
                 move = [n_move]
 
-            # if n8.fitness < selected_neighbor.fitness:
-            #     selected_neighbor = n8
-            #     move = n8m
+            if n8.fitness < selected_neighbor.fitness:
+                selected_neighbor = n8
+                move = n8m
 
             delta = local_best.fitness - selected_neighbor.fitness
 

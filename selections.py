@@ -22,9 +22,6 @@ def roullete_selection(cube, population):
         total_norm_sum += (cube.max_fitness - chromossome['fit']) / fitness_sum
         normalized_fits.append(total_norm_sum)
 
-    # print([c['fit'] for c in population])
-    # print(normalized_fits)
-
     # Spin roullete
     for i in range(int(len(population))):
         roullete_num = random()#uniform(0.8, 1)
