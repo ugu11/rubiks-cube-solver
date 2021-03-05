@@ -13,13 +13,13 @@ def roullete_selection(cube, population):
 
     # Get fitness_sum
     for chromossome in population:
-        fitness_sum += (cube.max_fitness - chromossome['fit'])
+        fitness_sum += (cube.max_fitness - chromossome['fit'][1])
 
     total_norm_sum = 0
 
     # Normalize fitness
     for chromossome in population:
-        total_norm_sum += (cube.max_fitness - chromossome['fit']) / fitness_sum
+        total_norm_sum += (cube.max_fitness - chromossome['fit'][1]) / fitness_sum
         normalized_fits.append(total_norm_sum)
 
     # Spin roullete

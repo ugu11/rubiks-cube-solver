@@ -9,22 +9,23 @@ def mutation(cube, chromossome):
     chromossome = deepcopy(chromossome)
     moves = Cube.available_moves
 
-    for i in range(len(chromossome['val'])):
-        if random() < MUTATION_PROB: #get_mutation_prob(0.2, cube.max_fitness, chromossome['fit']):
-            new_move = moves[randint(0, len(moves)-1)]
-    
-            if i == 0:
-                while chromossome['val'][i+1][0] == new_move[0]:
-                    new_move = moves[randint(0, len(moves)-1)]
+    for group in chromossome['val']:
+        for i in range(len(group)):
+            if random() < MUTATION_PROB: #get_mutation_prob(0.2, cube.max_fitness, chromossome['fit']):
+                new_move = moves[randint(0, len(moves)-1)]
+        
+                if i == 0:
+                    while group[i+1][0] == new_move[0]:
+                        new_move = moves[randint(0, len(moves)-1)]
 
-            elif i == len(chromossome['val'])-1:
-                while chromossome['val'][i-1][0] == new_move[0]:
-                    new_move = moves[randint(0, len(moves)-1)]
-            else:
-                while chromossome['val'][i-1][0] == new_move[0] and chromossome['val'][i+1][0] == new_move[0]:
-                    new_move = moves[randint(0, len(moves)-1)]
+                elif i == len(group)-1:
+                    while group[i-1][0] == new_move[0]:
+                        new_move = moves[randint(0, len(moves)-1)]
+                else:
+                    while group[i-1][0] == new_move[0] and group[i+1][0] == new_move[0]:
+                        new_move = moves[randint(0, len(moves)-1)]
 
-            chromossome['val'][i] = new_move
+                group[i] = new_move
 
     return chromossome
 
@@ -114,8 +115,9 @@ def uniform_mutation(cube, chromossome):
     chrom = deepcopy(chromossome)
     random_chromossome = generate_chromossome(len(chrom['val']))
     
-    for i in range(0, len(chrom['val']), 2):
-        chrom['val'][i] = random_chromossome['val'][i]
+    for i in range(len(chrom['val'])):
+        for h in range(0, len(chrom['val'][i]), 2):
+            chrom['val'][i][h] = random_chromossome['val'][i][h]
 
     evaluate_solution(cube, chrom)
 

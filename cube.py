@@ -575,6 +575,38 @@ class Cube():
     def calc_fitness(self):
         fit = 0
 
+        # if self.fitness >= 200 or self.fitness == 0:
+        #     fit += self.calc_blocks_fitness()
+        #     fit += self.calc_lines_fitness()
+        #     fit += self.calc_pairs_fitness()
+        #     self.max_fitness = 9 * BLOCK_COST * 6
+
+        # else:
+        if self.fitness >= 35:
+            self.max_fitness = (1 * 4 + 2 * 5) * 6
+        else:
+            self.max_fitness = 9 * 6
+    
+        for face_label in self.faces:
+            face = self.faces[face_label]
+            for row in range(3):
+                for col in range(3):
+                    piece = face[row][col]
+                    if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
+                        if '1' in piece and self.fitness >= 35:
+                            fit += 2
+                        else:
+                            fit += 1
+
+        # fit += self.n_moves
+
+        # self.fitness = (self.max_fitness - fit) * (1/self.n_moves)
+        self.fitness = self.max_fitness - fit
+        return self.fitness
+
+    def calc_fitness_bu(self):
+        fit = 0
+
         if self.fitness >= 180 or self.fitness == 0:
             fit += self.calc_blocks_fitness()
             fit += self.calc_lines_fitness()

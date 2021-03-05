@@ -10,8 +10,12 @@ def solve():
     # cube.calc_fitness()
 
     # simulated_anealing(cube)
+    best_sols = []
+    for i in range(2):
+        best_solve = genetic_algorithm(Cube(cube))
+        best_sols.append(deepcopy(best_solve))
 
-    best_solve = genetic_algorithm(cube)
+    print([sol for sol in best_sols])
 
     # b = "d2 b2 r' f2 b l' f u b r' l f2 l u2 l' u2 d b d2 l f2 r' l2 b r2 b' r b r' l' d2 l2 u' d2"
     # b = "d2 b2 r' f2 b l' f u b r' l f2 l u2 l' u2 d b d2 l f2 r' l2 b r2 b' r b r' l' d2" #l2 u' d2"

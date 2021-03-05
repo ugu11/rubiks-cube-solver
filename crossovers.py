@@ -18,6 +18,13 @@ def crossover_1_point(chromossome1, chromossome2):
     }
     return [offspring1, offspring2]
 
+
+def crossover_1_point2(chromossome1, chromossome2):
+    smallest_len = chromossome1 if len(chromossome1) < len(chromossome2) else chromossome2
+    cut_point = randint(0, len(smallest_len)-1)
+    return [chromossome1[:cut_point] + chromossome2[cut_point:], chromossome2[:cut_point] + chromossome1[cut_point:]]
+
+
 def crossover_1_point_same_fit(cube, chromossome1, chromossome2):
     cube_cpy = Cube(cube)
     smallest_len = chromossome1 if len(chromossome1['val']) < len(chromossome2['val']) else chromossome2
@@ -40,6 +47,18 @@ def crossover_1_point_same_fit(cube, chromossome1, chromossome2):
     return [offspring1, offspring2]
 
     
+def crossover_1p(chromossome1, chromossome2):
+    offsprings_1h = crossover_1_point2(chromossome1['val'][0], chromossome2['val'][0])
+    offsprings_2h = crossover_1_point2(chromossome1['val'][1], chromossome2['val'][1])
+
+    offsprings = []
+
+    for i in range(2):
+        for h in range(2):
+            off = {'fit': 0, 'val': [offsprings_1h[i], offsprings_2h[h]]}
+            offsprings.append(off)
+
+    return offsprings
 
 
 def crossover_2_point(chromossome1, chromossome2):

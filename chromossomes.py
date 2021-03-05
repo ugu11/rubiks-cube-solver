@@ -5,11 +5,18 @@ from math import exp
 from copy import deepcopy
 
 
-N_GENERATIONS = 3000
-POP_SIZE = 400
-CROSSOVER_PROB = 0.7
-MUTATION_PROB = 0.1
+N_GENERATIONS = 400
+POP_SIZE = 200
+CROSSOVER_PROB = 0.9
+MUTATION_PROB = 0.5
 CHROMOSSOME_SIZE = 20
+
+
+def get_fit_1h(chromossome):
+    return chromossome['fit'][0]
+
+def get_fit_2h(chromossome):
+    return chromossome['fit'][1]
 
 
 def get_fit(chromossome):
@@ -35,22 +42,30 @@ def generate_chromossome(size=None):
         chromossome.append(move)
 
     # chromossome += ['n'] * (CHROMOSSOME_SIZE - 20)
-
+    mid_index = int(len(chromossome)/2)
     return {
         'fit': 0,
-        'val': chromossome
+        'val': [chromossome[:mid_index], chromossome[mid_index:]]
     }
 
 def evaluate_solution(cube, chromossome):
     cube = Cube(cube)
-    
-    for move in chromossome['val']:
+
+    # First half
+    for move in chromossome['val'][0]:
         if not move[0] == 'n':
             cube.make_move(move)
 
-    cube.calc_fitness()
+    first_half = cube.calc_fitness()
 
-    chromossome['fit'] = cube.fitness
+    # Second half
+    for move in chromossome['val'][1]:
+        if not move[0] == 'n':
+            cube.make_move(move)
+    second_half = cube.calc_fitness()
+
+    # chromossome['fit'] = cube.fitness
+    chromossome['fit'] = (first_half, second_half)
 
 def get_best_fit_index(cube, chromossome):
     cube = Cube(cube)

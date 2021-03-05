@@ -84,7 +84,7 @@ def best_overtake(cube, population):
     mrg = []
 
     for chromossome in bestest:
-        uni_mut.append(uniform_mutation(cube, chromossome))
+        # uni_mut.append(uniform_mutation(cube, chromossome))
         mrg.append(mutation_by_random_generation(cube, chromossome))
 
     new_population += bestest + uni_mut + mrg
@@ -107,7 +107,7 @@ def is_move_none(m): return m == 'n'
 
 def repair_chromossome(chromossome):
     cube = Cube()
-    chromossome_val = chromossome['val']
+    chromossome_val = [gene for group in chromossome['val'] for gene in group]
     i = 0
     while i < len(chromossome_val)-2:
         if chromossome_val[i][0] == chromossome_val[i+1][0] and chromossome_val[i][0] != 'n' and chromossome_val[i+1][0] != 'n':
@@ -191,10 +191,13 @@ def repair_chromossome(chromossome):
             chromossome_val[last_index-1] = chromossome_val[last_index-1][0] + '2'
             chromossome_val[last_index] = 'n'
 
-    if chromossome['fit'] <= 185:
-        chromossome['val'] = chromossome_val + ['n'] * (randint(0, 3))
-    else:
-        chromossome['val'] = chromossome_val
+    # if chromossome['fit'][1] <= 185:
+    new_chrom_val = chromossome_val + ['n'] * (CHROMOSSOME_SIZE - len(chromossome_val))
+    mid_index = int(len(new_chrom_val)/2)
+    chromossome['val'] = [new_chrom_val[:mid_index], new_chrom_val[mid_index:]]
+    # else:
+    #     mid_index = int(len(chromossome_val)/2)
+    #     chromossome['val'] = [chromossome_val[:mid_index], chromossome_val[mid_index:]]
 
     return chromossome
 
