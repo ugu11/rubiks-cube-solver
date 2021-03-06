@@ -5,25 +5,25 @@ from math import exp
 from copy import deepcopy
 
 
-N_GENERATIONS = 400
-POP_SIZE = 200
-CROSSOVER_PROB = 0.9
-MUTATION_PROB = 0.5
-CHROMOSSOME_SIZE = 20
+N_GENERATIONS = 250
+POP_SIZE = 100
+CROSSOVER_PROB = 0.7
+MUTATION_PROB = 0.3
+CHROMOSSOME_SIZE = 6
 
 
 def get_fit_1h(chromossome):
-    return chromossome['fit'][0]
+    return chromossome['fit']
 
 def get_fit_2h(chromossome):
-    return chromossome['fit'][1]
+    return chromossome['fit']
 
 
 def get_fit(chromossome):
     return chromossome['fit']
 
 def generate_chromossome(size=None):
-    moves = Cube.available_moves
+    moves = Cube.available_moves[:18]
     chromossome = []
 
     if size == None:
@@ -42,30 +42,22 @@ def generate_chromossome(size=None):
         chromossome.append(move)
 
     # chromossome += ['n'] * (CHROMOSSOME_SIZE - 20)
-    mid_index = int(len(chromossome)/2)
     return {
         'fit': 0,
-        'val': [chromossome[:mid_index], chromossome[mid_index:]]
+        'val': chromossome
     }
 
 def evaluate_solution(cube, chromossome):
     cube = Cube(cube)
 
     # First half
-    for move in chromossome['val'][0]:
+    for move in chromossome['val']:
         if not move[0] == 'n':
             cube.make_move(move)
 
-    first_half = cube.calc_fitness()
+    fitness = cube.calc_fitness()
 
-    # Second half
-    for move in chromossome['val'][1]:
-        if not move[0] == 'n':
-            cube.make_move(move)
-    second_half = cube.calc_fitness()
-
-    # chromossome['fit'] = cube.fitness
-    chromossome['fit'] = (first_half, second_half)
+    chromossome['fit'] = fitness
 
 def get_best_fit_index(cube, chromossome):
     cube = Cube(cube)

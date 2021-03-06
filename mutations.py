@@ -9,23 +9,22 @@ def mutation(cube, chromossome):
     chromossome = deepcopy(chromossome)
     moves = Cube.available_moves
 
-    for group in chromossome['val']:
-        for i in range(len(group)):
-            if random() < MUTATION_PROB: #get_mutation_prob(0.2, cube.max_fitness, chromossome['fit']):
-                new_move = moves[randint(0, len(moves)-1)]
-        
-                if i == 0:
-                    while group[i+1][0] == new_move[0]:
-                        new_move = moves[randint(0, len(moves)-1)]
+    for i in range(len(chromossome['val'])):
+        if random() < MUTATION_PROB: #get_mutation_prob(0.2, cube.max_fitness, chromossome['fit']):
+            new_move = moves[randint(0, len(moves)-1)]
+    
+            if i == 0:
+                while chromossome['val'][i+1][0] == new_move[0]:
+                    new_move = moves[randint(0, len(moves)-1)]
 
-                elif i == len(group)-1:
-                    while group[i-1][0] == new_move[0]:
-                        new_move = moves[randint(0, len(moves)-1)]
-                else:
-                    while group[i-1][0] == new_move[0] and group[i+1][0] == new_move[0]:
-                        new_move = moves[randint(0, len(moves)-1)]
+            elif i == len(chromossome['val'])-1:
+                while chromossome['val'][i-1][0] == new_move[0]:
+                    new_move = moves[randint(0, len(moves)-1)]
+            else:
+                while chromossome['val'][i-1][0] == new_move[0] and chromossome['val'][i+1][0] == new_move[0]:
+                    new_move = moves[randint(0, len(moves)-1)]
 
-                group[i] = new_move
+            chromossome['val'][i] = new_move
 
     return chromossome
 

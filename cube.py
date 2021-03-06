@@ -5,7 +5,7 @@ from math import exp
 
 BLOCK_COST = 6
 LINE_COST = 3
-PAIR_BLOCK_COST = 2
+PAIR_BLOCK_COST = 3
 LINE_BLOCK_COST = 4
 PAIR_COST = 1
 
@@ -155,7 +155,7 @@ class Cube():
                     [self.faces['b'][2][2], self.faces['b'][1][2], self.faces['b'][0][2]],
                     [self.faces['u'][0][0], self.faces['u'][1][0], self.faces['u'][2][0]]
                 )
-            elif move == 'd':
+            elif move == 'd': 
                 self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['f'][2], self.faces['l'][2], self.faces['b'][2], self.faces['r'][2]
             elif move == "d'":
                 self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['b'][2], self.faces['r'][2], self.faces['f'][2], self.faces['l'][2]
@@ -572,31 +572,41 @@ class Cube():
 
         return fit
 
+    def get_solved_faces(self):
+        solved_faces = []
+        for face in self.faces:
+            is_solved = self.check_is_face_solved(self.faces[face])
+
+            if is_solved:
+                solved_faces.append(face)
+
+        return solved_faces
+
     def calc_fitness(self):
         fit = 0
 
         # if self.fitness >= 200 or self.fitness == 0:
-        #     fit += self.calc_blocks_fitness()
-        #     fit += self.calc_lines_fitness()
-        #     fit += self.calc_pairs_fitness()
-        #     self.max_fitness = 9 * BLOCK_COST * 6
+        fit += self.calc_blocks_fitness()
+        fit += self.calc_lines_fitness()
+        fit += self.calc_pairs_fitness()
+        # self.max_fitness = 9 * BLOCK_COST * 6
 
         # else:
-        if self.fitness >= 35:
-            self.max_fitness = (1 * 4 + 2 * 5) * 6
-        else:
-            self.max_fitness = 9 * 6
+        # if self.fitness >= 35:
+        #     self.max_fitness = (1 * 4 + 2 * 5) * 6
+        # else:
+        #     self.max_fitness = 9 * 6
     
-        for face_label in self.faces:
-            face = self.faces[face_label]
-            for row in range(3):
-                for col in range(3):
-                    piece = face[row][col]
-                    if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
-                        if '1' in piece and self.fitness >= 35:
-                            fit += 2
-                        else:
-                            fit += 1
+        # for face_label in self.faces:
+        #     face = self.faces[face_label]
+        #     for row in range(3):
+        #         for col in range(3):
+        #             piece = face[row][col]
+        #             if piece[0] == face_label and int(piece[1]) == row and int(piece[2]) == col:
+        #                 if '1' in piece and self.fitness >= 35:
+        #                     fit += 2
+        #                 else:
+        #                     fit += 1
 
         # fit += self.n_moves
 
@@ -604,10 +614,10 @@ class Cube():
         self.fitness = self.max_fitness - fit
         return self.fitness
 
-    def calc_fitness_bu(self):
+    def calc_fitness_BU(self):
         fit = 0
 
-        if self.fitness >= 180 or self.fitness == 0:
+        if self.fitness >= 110 or self.fitness == 0:
             fit += self.calc_blocks_fitness()
             fit += self.calc_lines_fitness()
             fit += self.calc_pairs_fitness()

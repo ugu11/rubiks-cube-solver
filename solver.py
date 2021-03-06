@@ -1,108 +1,93 @@
 from cube import Cube
 from sa import simulated_anealing
 from ga import genetic_algorithm
+from populations_ops import repair_chromossome, evaluate_solution
 from copy import deepcopy
+
+import json
 
 def solve():
     cube = Cube()
     cube.scramble()
-    # original_cube = Cube(cube)
+    original_cube = Cube(cube)
+    curr_cube = Cube(original_cube)
     # cube.calc_fitness()
 
-    # simulated_anealing(cube)
-    best_sols = []
-    for i in range(2):
-        best_solve = genetic_algorithm(Cube(cube))
-        best_sols.append(deepcopy(best_solve))
+    # best_sols = []
+    # i = 0
+    # n_repeats = 0
+    # while i < 15:
+    #     print(curr_cube.fitness)
+    #     best_solve = genetic_algorithm(Cube(curr_cube), 5 + n_repeats)
+    #     if best_solve['fit'] < curr_cube.fitness:
+    #         best_sols.append(deepcopy(best_solve))
 
-    print([sol for sol in best_sols])
-
-    # b = "d2 b2 r' f2 b l' f u b r' l f2 l u2 l' u2 d b d2 l f2 r' l2 b r2 b' r b r' l' d2 l2 u' d2"
-    # b = "d2 b2 r' f2 b l' f u b r' l f2 l u2 l' u2 d b d2 l f2 r' l2 b r2 b' r b r' l' d2" #l2 u' d2"
-    # b = b.split(" ")
-    # b = ['u2', "d'", 'r', "u'", 'd', "b'", 'l2', 'u', 'f', 'r', "d'", 'f', "u'", "r'", 'u2', 'd', 'f2', 'l2', 'u', "b'", "l'", "f'", 'r', 'b', "r'", "l'", 'f', "r'", 'l', 'd2', 'r', 'f', 'l', 'f', "l'", 'f2']
-
-    # best_solve = {'fit': 0, 'val': b}
-
-    # for move in best_solve['val']:
-    #     cube.make_move(move)
-
-    # best_solve['fit'] = cube.calc_fitness()
-
-    # new_moves = []
-
-    # while cube.fitness > 0:
-    #     best_move = []
-    #     best_fit = cube.max_fitness
-    #     print(cube.fitness, best_fit, new_moves)
-    #     moves_cpy = deepcopy(cube.available_moves[:18])
-
-    #     if len(new_moves) == 0:
-    #         moves_cpy.remove(b[len(b)-1][0])
-    #         moves_cpy.remove(b[len(b)-1][0]+"'")
-    #         moves_cpy.remove(b[len(b)-1][0]+"2")
+    #         for m in best_solve['val']:
+    #             curr_cube.make_move(m)
+    #         curr_cube.calc_fitness()
+    #         n_repeats = 0
     #     else:
-    #         moves_cpy.remove(new_moves[len(new_moves)-1][0])
-    #         moves_cpy.remove(new_moves[len(new_moves)-1][0]+"'")
-    #         moves_cpy.remove(new_moves[len(new_moves)-1][0]+"2")
-        
-        
-    #     for move in moves_cpy:
-    #         moves2_cpy = deepcopy(moves_cpy)
-    #         moves2_cpy.remove(move[0])
-    #         moves2_cpy.remove(move[0]+"'")
-    #         moves2_cpy.remove(move[0]+"2")
+    #         n_repeats += 1
+    #     i += 1
+    #         # print([sol for sol in best_solve['val']])
 
-    #         tmp_cube = Cube(cube)
-    #         tmp_cube.make_move(move)
+    # final_sol = []
+    # for sol in best_sols:
+    #     print(sol)
+    #     final_sol += sol['val']
+
+    # final_chrom = {
+    #     'fit': 0,
+    #     'val': final_sol
+    # }
+
+    # 'fit': 230, 'val': ['f2', 'r', "d'", 'b', "d'", "l'", "f'", 'l']}
+    # {'fit': 226, 'val': ['l', 'f2', "r'", 'u', "d'", "b'"]}
+    # {'fit': 215, 'val': ["u'", "l'", 'u', "d'", 'b', "u'"]}
+    # {'fit': 204, 'val': ['d', 'b2', "u'", 'b', 'd', 'l2']}
+    # {'fit': 197, 'val': ['l', 'f2', "l'", 'f', 'u2', "f'", 'b', "l'"]}
+    # {'fit': 183, 'val': ['b2', 'd', "r'", 'b2', "u'", 'b', 'l']}
+    # {'fit': 174, 'val': ["l'", 'f', "b'", "f'", 'b', 'l2']}
+    # {'fit': 121, 'val': ["f'", 'b', "d'", 'f', "b'", 'l', 'f', "b'", "u'"]}
+    # {'fit': 95, 'val': ['u2', "b'", "u'", "r'", 'u', 'r', 'b']}
+    # {'fit': 75, 'val': ['u', 'b', "l'", "b'", 'l', 'u']}
+
+    with open('data.json') as json_file:
+        data = json.load(json_file)
+    
+
+    moves = ['f2', 'r', "d'", 'b', "d'", "l'", "f'", 'l', 'l', 'f2', "r'", 'u', "d'", "b'", "u'", "l'", 'u', "d'", 'b',
+    "u'", 'd', 'b2', "u'", 'b', 'd', 'l2', 'l', 'f2', "l'", 'f', 'u2', "f'", 'b', "l'", 'b2', 'd', "r'", 'b2', "u'", 'b', 'l',
+    "l'", 'f', "b'", "f'", 'b', 'l2', "f'", 'b', "d'", 'f', "b'", 'l', 'f', "b'", "u'", 'u2', "b'", "u'", "r'", 'u', 'r', 'b',
+    'u', 'b', "l'", "b'", 'l', 'u']
+
+    sol = {'fit': 0, 'val': moves}
+
+    evaluate_solution(cube, sol)
+
+    print(sol)
+
+    for move in sol['val']:
+        curr_cube.make_move(move)
+    curr_cube.calc_fitness()
+
+    solved_faces = curr_cube.get_solved_faces()
+
+    print(solved_faces)
+    
 
 
-    #         if tmp_cube.fitness < best_fit:
-    #             best_move = [move]
-    #             best_fit = tmp_cube.fitness
-
-    #         for move2 in moves2_cpy:
-    #             tmp_cube2 = Cube(tmp_cube)
-    #             tmp_cube2.make_move(move2)
-
-    #             moves3_cpy = deepcopy(cube.available_moves[:18])
-    #             moves3_cpy.remove(move2[0])
-    #             moves3_cpy.remove(move2[0]+"'")
-    #             moves3_cpy.remove(move2[0]+"2")
 
 
-    #             if tmp_cube2.fitness < best_fit:
-    #                 best_move = [move, move2]
-    #                 best_fit = tmp_cube2.fitness
+    # rc = True
 
-    #             for move3 in moves3_cpy:
-    #                 tmp_cube3 = Cube(tmp_cube2)
-    #                 tmp_cube3.make_move(move3)
+    # while rc == True:
+    #     final_chrom, rc = repair_chromossome(final_chrom)
+    
+    # print("Final sol: ", final_chrom['val'])
+    # print("Sol size: ", len(final_chrom['val']))
+    # print("Fit: ", final_chrom['fit'])
 
-    #                 moves4_cpy = deepcopy(cube.available_moves[:18])
-    #                 moves4_cpy.remove(move3[0])
-    #                 moves4_cpy.remove(move3[0]+"'")
-    #                 moves4_cpy.remove(move3[0]+"2")
-
-    #                 if tmp_cube3.fitness < best_fit:
-    #                     best_move = [move, move2, move3]
-    #                     best_fit = tmp_cube3.fitness
-
-    #                 for move4 in moves4_cpy:
-    #                     tmp_cube4 = Cube(tmp_cube3)
-    #                     tmp_cube4.make_move(move4)
-    #                     tmp_cube4.calc_fitness()
-
-    #                     if tmp_cube4.fitness < best_fit:
-    #                         best_move = [move, move2, move3, move4]
-    #                         best_fit = tmp_cube4.fitness
-
-    #     for move in best_move:
-    #         cube.make_move(move)
-    #     cube.calc_fitness()
-    #     new_moves += best_move
-
-    #     print(best_solve['val'] + new_moves)
 
 
 def main():
