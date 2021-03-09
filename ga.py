@@ -45,6 +45,7 @@ def apply_genetic_operators(cube, population, elite):
     return offsprings
 
 def genetic_algorithm(cube, chrom_size):
+    # CHROMOSSOME_SIZE = chrom_size
     cube.print()
     cube = Cube(cube)
     print("INITIAL FIT:", cube.fitness)
@@ -88,13 +89,12 @@ def genetic_algorithm(cube, chrom_size):
         # population = sorted(population, key=lambda chrom: (get_fit_2h(chrom), get_fit_1h(chrom)))
         population = social_disaster(cube, population)
 
-        evaluate_pop(cube, population)
-        population.sort(key=get_fit)
-        if i % 50 == 0:
-            print("BEST OVERTAKE")
-            # population = renovate_half(cube, population)
-            population = best_overtake(cube, population)
-
+        # evaluate_pop(cube, population)
+        # population.sort(key=get_fit)
+        # if i % 50 == 0:
+        #     print("BEST OVERTAKE")
+        #     # population = renovate_half(cube, population)
+        #     population = best_overtake(cube, population)
 
         population = repair(population)
         population += elite

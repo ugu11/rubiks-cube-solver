@@ -16,13 +16,16 @@ class Cube():
     n_moves = 1
     available_moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'", 'u2', 'b2', 'f2', 'l2', 'r2', 'd2', 'n']
     oposite_face = {
-        'u': 'd',
-        'd': 'u',
-        'l': 'r',
-        'r': 'l',
-        'f': 'b',
-        'b': 'f',
-        'n': 'm'
+        'u': 'de',
+        'd': 'ue',
+        'l': 'rm',
+        'r': 'lm',
+        'f': 'bs',
+        'b': 'fs',
+        'n': '-',
+        'm': 'lr',
+        's': 'fb',
+        'e': 'ud',
     }
 
     def __init__(self, cube=None):
@@ -46,30 +49,105 @@ class Cube():
             
             self.faces[i] = face
 
+    def rotate(self, rotation):
+
+        if len(rotation) > 1 and rotation[1] == '2':
+            self.make_move(rotation[0])
+            self.make_move(rotation[0])
+        elif rotation == "x":
+            self.make_move('r')
+            self.make_move("l'")
+            self.make_move("m'")
+        elif rotation == "x'":
+            self.make_move("r'")
+            self.make_move("l")
+            self.make_move("m")
+        elif rotation == "y":
+            self.make_move("u")
+            self.make_move("d'")
+            self.make_move("e'")
+        elif rotation == "y'":
+            self.make_move("u'")
+            self.make_move("d")
+            self.make_move("e")
+        elif rotation == "z":
+            self.make_move("f")
+            self.make_move("s")
+            self.make_move("b'")
+        elif rotation == "z'":
+            self.make_move("f'")
+            self.make_move("s'")
+            self.make_move("b")
+
     def make_move(self, move):
         if move[0] == 'n': return
-        face = self.faces[move[0]]
 
 
+        if move[0] in ['x', 'y', 'z']:
+            self.rotate(move)
         # Double move
-        if len(move) > 1 and move[1] == '2':
+        elif len(move) > 1 and move[1] == '2':
             self.make_move(move[0])
             self.make_move(move[0])
             self.n_moves -= 1
         else:
             self.n_moves += 1
-            if "'" in move:
-                # rotate corners
-                face[0][0], face[0][2], face[2][2], face[2][0] = face[0][2], face[2][2], face[2][0], face[0][0]
-                # rotate edges
-                face[0][1], face[1][2], face[2][1], face[1][0] = face[1][2], face[2][1], face[1][0], face[0][1]
+
+            if move == "m'":
+                [[self.faces['b'][2][1], self.faces['b'][1][1], self.faces['b'][0][1]],
+                [self.faces['d'][0][1], self.faces['d'][1][1], self.faces['d'][2][1]],
+                [self.faces['f'][0][1], self.faces['f'][1][1], self.faces['f'][2][1]],
+                [self.faces['u'][0][1], self.faces['u'][1][1], self.faces['u'][2][1]]] = [[self.faces['u'][0][1], self.faces['u'][1][1], self.faces['u'][2][1]],
+                    [self.faces['b'][2][1], self.faces['b'][1][1], self.faces['b'][0][1]],
+                    [self.faces['d'][0][1], self.faces['d'][1][1], self.faces['d'][2][1]],
+                    [self.faces['f'][0][1], self.faces['f'][1][1], self.faces['f'][2][1]]]
+            elif move == "m":
+                [[self.faces['u'][0][1], self.faces['u'][1][1], self.faces['u'][2][1]],
+                [self.faces['f'][0][1], self.faces['f'][1][1], self.faces['f'][2][1]],
+                [self.faces['d'][0][1], self.faces['d'][1][1], self.faces['d'][2][1]],
+                [self.faces['b'][2][1], self.faces['b'][1][1], self.faces['b'][0][1]]] = [[self.faces['b'][2][1], self.faces['b'][1][1], self.faces['b'][0][1]],
+                    [self.faces['u'][0][1], self.faces['u'][1][1], self.faces['u'][2][1]],
+                    [self.faces['f'][0][1], self.faces['f'][1][1], self.faces['f'][2][1]],
+                    [self.faces['d'][0][1], self.faces['d'][1][1], self.faces['d'][2][1]]]
+            elif move == "e":
+                self.faces['r'][1], self.faces['f'][1], self.faces['l'][1], self.faces['b'][1] = self.faces['b'][1], self.faces['r'][1], self.faces['f'][1], self.faces['l'][1]
+            elif move == "e'":
+                self.faces['r'][1], self.faces['f'][1], self.faces['l'][1], self.faces['b'][1] = self.faces['f'][1], self.faces['l'][1], self.faces['b'][1], self.faces['r'][1]
+            elif move == "s":
+                (self.faces['u'][1],
+                [self.faces['r'][0][1], self.faces['r'][1][1], self.faces['r'][2][1]],
+                self.faces['d'][1],
+                [self.faces['l'][0][1], self.faces['l'][1][1], self.faces['l'][2][1]]) = (
+                    [self.faces['l'][2][1], self.faces['l'][1][1], self.faces['l'][0][1]],
+                    self.faces['u'][1],
+                    [self.faces['r'][2][1], self.faces['r'][1][1], self.faces['r'][0][1]],
+                    self.faces['d'][1]
+                )
+            elif move == "s'":
+                (self.faces['u'][1],
+                [self.faces['r'][2][1], self.faces['r'][1][1], self.faces['r'][0][1]],
+                self.faces['d'][1],
+                [self.faces['l'][2][1], self.faces['l'][1][1], self.faces['l'][0][1]]) = (
+                    [self.faces['r'][0][1], self.faces['r'][1][1], self.faces['r'][2][1]],
+                    self.faces['d'][1],
+                    [self.faces['l'][0][1], self.faces['l'][1][1], self.faces['l'][2][1]],
+                    self.faces['u'][1]
+                )
             else:
-                # rotate corners
-                face[0][0], face[0][2], face[2][2], face[2][0] = face[2][0], face[0][0], face[0][2], face[2][2]
-                # rotate edges  
-                face[0][1], face[1][2], face[2][1], face[1][0] = face[1][0], face[0][1], face[1][2], face[2][1]
+                face = self.faces[move[0]]
+                if "'" in move:
+                    # rotate corners
+                    face[0][0], face[0][2], face[2][2], face[2][0] = face[0][2], face[2][2], face[2][0], face[0][0]
+                    # rotate edges
+                    face[0][1], face[1][2], face[2][1], face[1][0] = face[1][2], face[2][1], face[1][0], face[0][1]
+                else:
+                    # rotate corners
+                    face[0][0], face[0][2], face[2][2], face[2][0] = face[2][0], face[0][0], face[0][2], face[2][2]
+                    # rotate edges  
+                    face[0][1], face[1][2], face[2][1], face[1][0] = face[1][0], face[0][1], face[1][2], face[2][1]
             
             # self.faces[move[0]] = face
+
 
             if move == 'u':
                 self.faces['r'][0], self.faces['f'][0], self.faces['l'][0], self.faces['b'][0] = self.faces['b'][0], self.faces['r'][0], self.faces['f'][0], self.faces['l'][0]
@@ -261,7 +339,7 @@ class Cube():
                 is_adjacent_line_valid = adjacent_line[0][0] == adjacent_line[1][0] and adjacent_line[0][0] == adjacent_line[2][0]
             else: is_adjacent_line_valid = True
 
-            return is_line_valid and is_adjacent_line_valid and left_edge_face[0] == self.oposite_face[right_edge_face[0]]
+            return is_line_valid and is_adjacent_line_valid and left_edge_face[0] in self.oposite_face[right_edge_face[0]]
 
         elif is_vertical:
             line = [face[i][j1] for i in range(len(face))]
@@ -344,7 +422,7 @@ class Cube():
                         top_edge_face = self.faces['u'][1][0]
                         bottom_edge_face = self.faces['d'][1][0]
 
-            return is_line_valid and is_adjacent_line_valid and top_edge_face[0] == self.oposite_face[bottom_edge_face[0]]
+            return is_line_valid and is_adjacent_line_valid and top_edge_face[0] in self.oposite_face[bottom_edge_face[0]]
 
 
         return False
@@ -581,6 +659,20 @@ class Cube():
                 solved_faces.append(face)
 
         return solved_faces
+
+    def check_is_slice_solved(self, cube_slice):
+        if cube_slice == 'e':
+            slice_faces = ['f', 'r', 'l', 'b']
+        elif cube_slice == 'm':
+            slice_faces = ['f', 'u', 'b', 'd']
+        elif cube_slice == 's':
+            slice_faces = ['u', 'r', 'd', 'l']
+
+        is_slice_solved = True
+        for face in slice_faces:
+            is_slice_solved = is_slice_solved and self.check_is_line(self.faces[face], (1, 0), (1, 2)) 
+
+        return is_slice_solved
 
     def calc_fitness(self):
         fit = 0

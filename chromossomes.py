@@ -5,12 +5,11 @@ from math import exp
 from copy import deepcopy
 
 
-N_GENERATIONS = 250
+N_GENERATIONS = 150
 POP_SIZE = 100
 CROSSOVER_PROB = 0.7
 MUTATION_PROB = 0.3
 CHROMOSSOME_SIZE = 6
-
 
 def get_fit_1h(chromossome):
     return chromossome['fit']
@@ -23,7 +22,8 @@ def get_fit(chromossome):
     return chromossome['fit']
 
 def generate_chromossome(size=None):
-    moves = Cube.available_moves[:18]
+    moves = Cube.available_moves
+    moves = moves[:len(moves)-1]
     chromossome = []
 
     if size == None:
@@ -91,5 +91,10 @@ def get_worst_fit_index(cube, chromossome):
 
 
 def evaluate_pop(cube, population):
-    for chromossome in population:
-        evaluate_solution(cube, chromossome)
+    i = 0
+    while i < len(population):
+        if len(population[i]['val']) == 0:
+            population.pop(i)
+            continue
+        evaluate_solution(cube, population[i])
+        i += 1

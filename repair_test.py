@@ -1,6 +1,7 @@
 from populations_ops import repair
 # a = ["l'", "u'", 'r', 'l', "r'"]
-a = ['u', 'n', 'n', 'n']
+a = ['u', 'u', 'f', 'n', 'f2', 'l', "l'", 'r', "l"]
+# u2 f' r l2
 b = {'fit': 0, 'val': a}
 
 p = [b]

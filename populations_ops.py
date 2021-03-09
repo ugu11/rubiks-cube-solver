@@ -106,122 +106,212 @@ def best_overtake(cube, population):
 
 def is_move_none(m): return m == 'n'
 
+def calc_move_group(move1, move2):
+    if move1 == move2:
+        if '2' in move1:
+            move2 = 'n'
+        else:
+            move1 = move1[0] + '2'
+            move2 = 'n'
+    elif '2' in move1:
+        if "'" in move2:
+            move1 = move1[0]
+            move2 = 'n'
+        else:
+            move1 = move1[0] + "'"
+            move2 = 'n'
+    elif '2' in move2:
+        if "'" in move1:
+            move1 = move1[0]
+            move2 = 'n'
+        else:
+            move1 = move1[0] + "'"
+            move2 = 'n'
+    elif ("'" in move1 and not "'" in move2) or (not "'" in move1 and "'" in move2):
+        move2 = 'n'
+
+    return move1, move2
+
+
 def repair_chromossome(chromossome):
+    cube = Cube()
+    chromossome_val = chromossome['val']
+    repaired = False
+
+    while 'n' in chromossome_val:
+        chromossome_val.remove('n')
+
+    i = 1
+    while i < len(chromossome_val):
+        # Check for same face consecutive moves
+        if chromossome_val[i][0] == chromossome_val[i-1][0]:
+            chromossome_val[i-1], chromossome_val[i] = calc_move_group(chromossome_val[i-1], chromossome_val[i])
+            repaired = True
+            if chromossome_val[i] == 'n':
+                chromossome_val.pop(i)
+            else:
+                i += 1
+            continue
+
+        # Check for interpolated moves same face - oposite face - same face
+        if len(chromossome_val) > 1 and chromossome_val[i][0] == chromossome_val[i-2][0] and chromossome_val[i-1][0] == cube.oposite_face[chromossome_val[i][0]]:
+            chromossome_val[i-2], chromossome_val[i] = calc_move_group(chromossome_val[i-2], chromossome_val[i])
+            repaired = True
+            if chromossome_val[i] == 'n':
+                chromossome_val.pop(i)
+            else:
+                i += 1
+            continue
+
+        i += 1
+
+    
+    while 'n' in chromossome_val:
+        chromossome_val.remove('n')
+
+    i = 1
+    while i < len(chromossome_val):
+        if ((chromossome_val[i-1][0] == 'l' and chromossome_val[i][0] == 'r')
+        or (chromossome_val[i-1][0] == 'b' and chromossome_val[i][0] == 'f')
+        or (chromossome_val[i-1][0] == 'd' and chromossome_val[i][0] == 'u')):
+            chromossome_val[i-1], chromossome_val[i] = chromossome_val[i], chromossome_val[i-1]
+            repaired = True
+        i += 1
+
+    new_chrom = {
+        'fit': 0,
+        'val': chromossome_val
+    }
+    return new_chrom, repaired
+
+
+def repair_chromossome_(chromossome):
     cube = Cube()
     chromossome_val = chromossome['val']
     i = 0
     repaired = False
 
-    while i < len(chromossome_val)-2:
-        if chromossome_val[i][0] == chromossome_val[i+1][0] and chromossome_val[i][0] != 'n' and chromossome_val[i+1][0] != 'n':
-            if '2' in chromossome_val[i]:
-                if '2' in chromossome_val[i+1]:
-                    chromossome_val[i] = 'n'
-                    chromossome_val[i+1] = 'n'
-                elif "'" in chromossome_val[i+1]:
-                    chromossome_val[i] = chromossome_val[i][0]
-                    chromossome_val[i+1] = 'n'
-                else:
-                    chromossome_val[i] = chromossome_val[i][0] + "'"
-                    chromossome_val[i+1] = 'n'
-                repaired = True
-            elif chromossome_val[i] == chromossome_val[i+1]:
-                chromossome_val[i] = chromossome_val[i][0] + '2'
-                chromossome_val[i+1] = 'n'
-                repaired = True
-            elif '2' in chromossome_val[i+1]:
-                if '2' in chromossome_val[i]:
-                    chromossome_val[i] = 'n'
-                    chromossome_val[i+1] = 'n'
-                elif "'" in chromossome_val[i]:
-                    chromossome_val[i] = chromossome_val[i][0]
-                    chromossome_val[i+1] = 'n'
-                else:
-                    chromossome_val[i] = chromossome_val[i][0] + "'"
-                    chromossome_val[i+1] = 'n'
-                repaired = True
-            elif (("'" not in chromossome_val[i] and not "2" in chromossome_val[i] and "'" in chromossome_val[i+1])
-            or ("'" in chromossome_val[i] and "'" not in chromossome_val[i+1] and not "2" in chromossome_val[i+1])):
-                chromossome_val[i] = 'n'
-                chromossome_val[i+1] = 'n'
-                repaired = True
-        elif (i <= len(chromossome_val)-2
-        and chromossome_val[i][0] != 'n' and chromossome_val[i+2][0] != 'n'
-        and (chromossome_val[i+1][0] == 'n' or chromossome_val[i][0] == cube.oposite_face[chromossome_val[i+1][0]]) and i+2 <= len(chromossome_val)-1):
-            if '2' in chromossome_val[i]:
-                if '2' in chromossome_val[i+2]:
-                    chromossome_val[i] = 'n'
-                    chromossome_val[i+2] = 'n'
-                elif "'" in chromossome_val[i+2]:
-                    chromossome_val[i] = chromossome_val[i][0]
-                    chromossome_val[i+2] = 'n'
-                else:
-                    chromossome_val[i] = chromossome_val[i][0] + "'"
-                    chromossome_val[i+2] = 'n'
-                repaired = True
-            elif chromossome_val[i] == chromossome_val[i+2]:
-                chromossome_val[i] = chromossome_val[i][0] + '2'
-                chromossome_val[i+2] = 'n'
-                repaired = True
-            elif chromossome_val[i][0] == chromossome_val[i+2][0] and (("'" not in chromossome_val[i] and "'" in chromossome_val[i+2])
-            or ("'" in chromossome_val[i] and "'" not in chromossome_val[i+2])) and not "2" in chromossome_val[i+2]:
-                chromossome_val[i] = 'n'
-                chromossome_val[i+2] = 'n'
-                repaired = True
-            elif '2' in chromossome_val[i+2]:
-                if '2' in chromossome_val[i]:
-                    chromossome_val[i] = 'n'
-                    chromossome_val[i+2] = 'n'
-                elif "'" in chromossome_val[i]:
-                    chromossome_val[i] = chromossome_val[i][0]
-                    chromossome_val[i+2] = 'n'
-                else:
-                    chromossome_val[i] = chromossome_val[i][0] + "'"
-                    chromossome_val[i+2] = 'n'
-                repaired = True
-
-        if ((chromossome_val[i][0] == 'l' and chromossome_val[i+1][0] == 'r')
-        or (chromossome_val[i][0] == 'b' and chromossome_val[i+1][0] == 'f')
-        or (chromossome_val[i][0] == 'd' and chromossome_val[i+1][0] == 'u')):
-            chromossome_val[i], chromossome_val[i+1] = chromossome_val[i+1], chromossome_val[i]
-            repaired = True
-
-        i += 1
-
-    # chromossome_val[i] += '-'
-
-    # chromossome_val.sort(key=is_move_none)
-    last_index = len(chromossome_val)-1
-    # print(last_index, chromossome_val)
-
+    while 'n' in chromossome_val:
+        chromossome_val.remove('n')
 
     if len(chromossome_val) == 2 and chromossome_val[0][0] == chromossome_val[1][0]:
-        chromossome_val = generate_chromossome(2)['val']
+        chromossome_val = generate_chromossome(4)['val']
         repaired = True
-    elif len(chromossome_val) > 1 and chromossome_val[last_index][0] == chromossome_val[last_index-1][0] and chromossome_val[last_index][0] != 'n' and chromossome_val[last_index-1][0] != 'n':
-        if '2' in chromossome_val[last_index] or (("'" in chromossome_val[last_index-1] and "'" not in chromossome_val[last_index])
-        or "'" not in chromossome_val[last_index-1] and "'" in chromossome_val[last_index]):
-            chromossome_val[last_index-1] = 'n'
-            chromossome_val[last_index] = 'n'
-        else:
-            chromossome_val[last_index-1] = chromossome_val[last_index-1][0] + '2'
-            chromossome_val[last_index] = 'n'
-        repaired = True
-    
-    if ((chromossome_val[last_index-1][0] == 'l' and chromossome_val[last_index][0] == 'r')
-    or (chromossome_val[last_index-1][0] == 'b' and chromossome_val[last_index][0] == 'f')
-    or (chromossome_val[last_index-1][0] == 'd' and chromossome_val[last_index][0] == 'u')):
-        chromossome_val[last_index-1], chromossome_val[last_index] = chromossome_val[last_index], chromossome_val[last_index-1]
-        repaired = True
+        chromossome['val'] = chromossome_val
+        return chromossome, repaired
+    else:
+        while i < len(chromossome_val)-2:
+            if chromossome_val[i][0] == chromossome_val[i+1][0] and chromossome_val[i][0] != 'n' and chromossome_val[i+1][0] != 'n':
+                if '2' in chromossome_val[i]:
+                    if '2' in chromossome_val[i+1]:
+                        chromossome_val[i] = 'n'
+                        chromossome_val[i+1] = 'n'
+                    elif "'" in chromossome_val[i+1]:
+                        chromossome_val[i] = chromossome_val[i][0]
+                        chromossome_val[i+1] = 'n'
+                    else:
+                        chromossome_val[i] = chromossome_val[i][0] + "'"
+                        chromossome_val[i+1] = 'n'
+                    repaired = True
+                elif chromossome_val[i] == chromossome_val[i+1]:
+                    chromossome_val[i] = chromossome_val[i][0] + '2'
+                    chromossome_val[i+1] = 'n'
+                    repaired = True
+                elif '2' in chromossome_val[i+1]:
+                    if '2' in chromossome_val[i]:
+                        chromossome_val[i] = 'n'
+                        chromossome_val[i+1] = 'n'
+                    elif "'" in chromossome_val[i]:
+                        chromossome_val[i] = chromossome_val[i][0]
+                        chromossome_val[i+1] = 'n'
+                    else:
+                        chromossome_val[i] = chromossome_val[i][0] + "'"
+                        chromossome_val[i+1] = 'n'
+                    repaired = True
+                elif (("'" not in chromossome_val[i] and not "2" in chromossome_val[i] and "'" in chromossome_val[i+1])
+                or ("'" in chromossome_val[i] and "'" not in chromossome_val[i+1] and not "2" in chromossome_val[i+1])):
+                    chromossome_val[i] = 'n'
+                    chromossome_val[i+1] = 'n'
+                    repaired = True
+            elif (i <= len(chromossome_val)-2
+            and chromossome_val[i][0] != 'n' and chromossome_val[i+2][0] != 'n' and (chromossome_val[i+1][0] == 'n' 
+            or chromossome_val[i][0] in cube.oposite_face[chromossome_val[i+1][0]]) and i+2 <= len(chromossome_val)-1):
+                if '2' in chromossome_val[i]:
+                    if '2' in chromossome_val[i+2]:
+                        chromossome_val[i] = 'n'
+                        chromossome_val[i+2] = 'n'
+                    elif "'" in chromossome_val[i+2]:
+                        chromossome_val[i] = chromossome_val[i][0]
+                        chromossome_val[i+2] = 'n'
+                    else:
+                        chromossome_val[i] = chromossome_val[i][0] + "'"
+                        chromossome_val[i+2] = 'n'
+                    repaired = True
+                elif chromossome_val[i] == chromossome_val[i+2]:
+                    chromossome_val[i] = chromossome_val[i][0] + '2'
+                    chromossome_val[i+2] = 'n'
+                    repaired = True
+                elif chromossome_val[i][0] == chromossome_val[i+2][0] and (("'" not in chromossome_val[i] and "'" in chromossome_val[i+2])
+                or ("'" in chromossome_val[i] and "'" not in chromossome_val[i+2])) and not "2" in chromossome_val[i+2]:
+                    chromossome_val[i] = 'n'
+                    chromossome_val[i+2] = 'n'
+                    repaired = True
+                elif '2' in chromossome_val[i+2]:
+                    if '2' in chromossome_val[i]:
+                        chromossome_val[i] = 'n'
+                        chromossome_val[i+2] = 'n'
+                    elif "'" in chromossome_val[i]:
+                        chromossome_val[i] = chromossome_val[i][0]
+                        chromossome_val[i+2] = 'n'
+                    else:
+                        chromossome_val[i] = chromossome_val[i][0] + "'"
+                        chromossome_val[i+2] = 'n'
+                    repaired = True
+
+            if len(chromossome_val) > 1 and ((chromossome_val[i][0] == 'l' and chromossome_val[i+1][0] == 'r')
+            or (chromossome_val[i][0] == 'b' and chromossome_val[i+1][0] == 'f')
+            or (chromossome_val[i][0] == 'd' and chromossome_val[i+1][0] == 'u')
+            or (chromossome_val[i][0] == 'l' and chromossome_val[i+1][0] == 'm')
+            or (chromossome_val[i][0] == 'r' and chromossome_val[i+1][0] == 'm')):
+                chromossome_val[i], chromossome_val[i+1] = chromossome_val[i+1], chromossome_val[i]
+                repaired = True
+
+            i += 1
+
+        # chromossome_val[i] += '-'
+
+        # chromossome_val.sort(key=is_move_none)
+        last_index = len(chromossome_val)-1
+
+
+        if len(chromossome_val) > 1 and chromossome_val[last_index][0] == chromossome_val[last_index-1][0] and chromossome_val[last_index][0] != 'n' and chromossome_val[last_index-1][0] != 'n':
+            if '2' in chromossome_val[last_index] or (("'" in chromossome_val[last_index-1] and "'" not in chromossome_val[last_index])
+            or "'" not in chromossome_val[last_index-1] and "'" in chromossome_val[last_index]):
+                chromossome_val[last_index-1] = 'n'
+                chromossome_val[last_index] = 'n'
+            else:
+                chromossome_val[last_index-1] = chromossome_val[last_index-1][0] + '2'
+                chromossome_val[last_index] = 'n'
+            repaired = True
+        
+        if len(chromossome_val) > 1 and ((chromossome_val[last_index-1][0] == 'l' and chromossome_val[last_index][0] == 'r')
+        or (chromossome_val[last_index-1][0] == 'b' and chromossome_val[last_index][0] == 'f')
+        or (chromossome_val[last_index-1][0] == 'd' and chromossome_val[last_index][0] == 'u')
+        or (chromossome_val[last_index-1][0] == 'l' and chromossome_val[last_index][0] == 'm')
+        or (chromossome_val[last_index-1][0] == 'r' and chromossome_val[last_index][0] == 'm')):
+            chromossome_val[last_index-1], chromossome_val[last_index] = chromossome_val[last_index], chromossome_val[last_index-1]
+            repaired = True
 
     while 'n' in chromossome_val:
         chromossome_val.remove('n')
 
-
-    if chromossome['fit'] <= 110:
-        new_chrom_val = chromossome_val + (['n'] * (CHROMOSSOME_SIZE - len(chromossome_val)))
+    #if chromossome['fit'] <= 110:
+    if len(chromossome_val) <= 2 or chromossome['fit'] >= 150:
+        new_chrom_val = generate_chromossome(5)['val']
     else:
-        new_chrom_val = chromossome_val + generate_chromossome(CHROMOSSOME_SIZE - len(chromossome_val))['val']
+        new_chrom_val = chromossome_val + (['n'] * (CHROMOSSOME_SIZE - len(chromossome_val)))
+    #else:
+    # new_chrom_val = chromossome_val + generate_chromossome(CHROMOSSOME_SIZE - len(chromossome_val))['val']
     chromossome['val'] = new_chrom_val
 
     return chromossome, repaired
@@ -238,24 +328,28 @@ def fix_empty_moves(chromossome):
         if chromossome_val[i] == 'n':
             n_count += 1
         else: break
-    last_move = chromossome_val[len(chromossome_val) - n_count - 2]
-    second_last_move = chromossome_val[len(chromossome_val) - n_count - 3]
-    # new_chrom = {
-    #     'fit': 0,
-    #     'val': chromossome_val[:len(chromossome_val) - n_count] #[:len(chromossome_val) - n_count + i + 1]
-    # }
-
-    for i in range(n_count):
-        new_move = last_move
-        while (new_move[0] == last_move[0] or (new_move[0] == second_last_move[0] and last_move[0] == cube.oposite_face[new_move[0]])):
-            new_move = moves[randint(0, len(moves)-1)]
-        chromossome_val[len(chromossome_val) - n_count + i] = new_move
+    if n_count > 0:
+        last_move = chromossome_val[len(chromossome_val) - n_count - 2]
+        second_last_move = chromossome_val[len(chromossome_val) - n_count - 3]
         new_chrom = {
             'fit': 0,
-            'val': deepcopy(chromossome_val)[:len(chromossome_val) - n_count + i + 1]
+            'val': chromossome_val[:len(chromossome_val) - n_count] #[:len(chromossome_val) - n_count + i + 1]
         }
-        second_last_move, last_move = last_move, new_move
-        new_chromossomes.append(new_chrom)
+
+    # for i in range(n_count):
+    #     new_move = last_move
+    #     while (new_move[0] == last_move[0] or (new_move[0] == second_last_move[0] and last_move[0] in cube.oposite_face[new_move[0]])):
+    #         new_move = moves[randint(0, len(moves)-1)]
+    #     chromossome_val[len(chromossome_val) - n_count + i] = new_move
+    #     new_chrom = {
+    #         'fit': 0,
+    #         'val': deepcopy(chromossome_val)[:len(chromossome_val) - n_count + i + 1]
+    #     }
+    #     second_last_move, last_move = last_move, new_move
+    #     was_repaired = True
+    #     while was_repaired == True:
+    #         new_chrom, was_repaired = repair_chromossome(new_chrom)
+    #     new_chromossomes.append(new_chrom)
 
     return new_chromossomes
 
@@ -264,18 +358,26 @@ def repair(population):
     new_population = []
     population = deepcopy(population)
 
-    for i in range(len(population)):
+    i = 0
+    while i < len(population):
         was_repaired = True
         while was_repaired == True:
             population[i], was_repaired = repair_chromossome(population[i])
-            
-        if len(population[i]['val']) > 0:
-            moves_count = Counter(population[i]['val'])
-            if 'n' in moves_count.keys() and moves_count['n'] == len(population[i]['val']):
-                population[i] = generate_chromossome()
-            else:
-                new_chromossomes = fix_empty_moves(deepcopy(population[i]))
-                new_population += new_chromossomes
+
+        if len(population[i]['val']) < 4:
+            population[i] = generate_chromossome()
+            continue
+
+
+        i += 1
+
+        # if len(population[i]['val']) > 0:
+        #     moves_count = Counter(population[i]['val'])
+        #     if 'n' in moves_count.keys() and moves_count['n'] == len(population[i]['val']):
+        #         population[i] = generate_chromossome()
+            # else: 
+            #     new_chromossomes = fix_empty_moves(deepcopy(population[i]))
+            #     new_population += new_chromossomes
 
     population += new_population
 

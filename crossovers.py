@@ -63,18 +63,27 @@ def crossover_1p(chromossome1, chromossome2):
 
 def crossover_2_point(chromossome1, chromossome2):
     smallest_len = chromossome1 if len(chromossome1['val']) < len(chromossome2['val']) else chromossome2
-    cut_point1 = randint(0, len(smallest_len['val'])-1)
-    cut_point2 = randint(cut_point1, len(smallest_len['val'])-1)
+    if len(smallest_len['val']) > 4:
+        cut_point1 = randint(0, len(smallest_len['val'])-2)
+        # while cut_point1 == 0 or cut_point1 == len(smallest_len['val'])-1:
+        #     cut_point1 = randint(0, len(smallest_len['val'])-1)
+        #     print("_")
 
-    offspring1 = {
-        'fit': 0,
-        'val': chromossome1['val'][:cut_point1] + chromossome2['val'][cut_point1:cut_point2] + chromossome1['val'][cut_point2:]
-    }
-    offspring2 = {
-        'fit': 0,
-        'val': chromossome2['val'][:cut_point1] + chromossome1['val'][cut_point1:cut_point2] + chromossome2['val'][cut_point2:]
-    }
-    return [offspring1, offspring2]
+        cut_point2 = randint(cut_point1+1, len(smallest_len['val'])-1)
+        # while cut_point2 <= cut_point1:
+        #     cut_point2 = randint(cut_point1+1, len(smallest_len['val'])-1)
+
+        offspring1 = {
+            'fit': 0,
+            'val': chromossome1['val'][:cut_point1] + chromossome2['val'][cut_point1:cut_point2] + chromossome1['val'][cut_point2:]
+        }
+        offspring2 = {
+            'fit': 0,
+            'val': chromossome2['val'][:cut_point1] + chromossome1['val'][cut_point1:cut_point2] + chromossome2['val'][cut_point2:]
+        }
+        return [offspring1, offspring2]
+    else:
+        return [chromossome1, chromossome2]
 
 def generate_mask(size):
     mask = []

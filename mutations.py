@@ -1,7 +1,7 @@
 import os
 from cube import Cube
 from random import randint, random, uniform, shuffle
-from math import exp
+from math import exp, floor
 from copy import deepcopy
 from chromossomes import *
 
@@ -12,8 +12,10 @@ def mutation(cube, chromossome):
     for i in range(len(chromossome['val'])):
         if random() < MUTATION_PROB: #get_mutation_prob(0.2, cube.max_fitness, chromossome['fit']):
             new_move = moves[randint(0, len(moves)-1)]
-    
-            if i == 0:
+
+            if len(chromossome['val']) == 1:
+                    new_move = moves[randint(0, len(moves)-1)]
+            elif i == 0:
                 while chromossome['val'][i+1][0] == new_move[0]:
                     new_move = moves[randint(0, len(moves)-1)]
 
@@ -98,12 +100,17 @@ def mutation_exchange(chromossome):
 
 def mutation_by_random_generation(cube, chromossome):
     # cut_point = get_best_fit_index(cube, chromossome)
-    cut_point = randint(int(len(chromossome['val']) * (4/5)), len(chromossome['val'])-1)
     random_chromossome = generate_chromossome(5)
+
+    if len(chromossome['val']) <= 2:
+        new_chromossome_val = chromossome['val'] + random_chromossome['val']
+    else:
+        cut_point = randint(floor(len(chromossome['val']) * (4/5)), len(chromossome['val'])-1)
+        new_chromossome_val = chromossome['val'][:cut_point] + random_chromossome['val']
 
     mutated_chromossome = {
         'fit': 0,
-        'val': chromossome['val'][:cut_point] + random_chromossome['val']#[cut_point:]# + chromossome['val'][cut_point2:]
+        'val': new_chromossome_val
     } 
 
     evaluate_solution(cube, mutated_chromossome)
