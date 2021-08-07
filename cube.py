@@ -14,7 +14,29 @@ class Cube():
     fitness = 0
     max_fitness = 9 * BLOCK_COST * 6
     n_moves = 1
-    available_moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'", 'u2', 'b2', 'f2', 'l2', 'r2', 'd2', 'n']
+    available_moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'"]
+    # available_moves = ["u", "u'", "f", "f'", "l", "l'", "r", "r'", "d", "d'", "b", "b'", 'u2', 'b2', 'f2', 'l2', 'r2', 'd2', 'n']
+    oposite_move = {
+        "u": "u'",
+        "u'": "u",
+        "f": "f'", 
+        "f'": "f", 
+        "l": "l'",
+        "l'": "l",
+        "r": "r'",
+        "r'": "r",
+        "d": "d'",
+        "d'": "d",
+        "b": "b'",
+        "b'": "b",
+        'u2': 'u2',
+        'f2': 'f2',
+        'r2': 'r2',
+        'l2': 'l2',
+        'd2': 'd2',
+        'b2': 'b2',
+        'n': 'n'
+    }
     oposite_face = {
         'u': 'd',
         'd': 'u',
@@ -56,6 +78,8 @@ class Cube():
             self.make_move(move[0])
             self.make_move(move[0])
             self.n_moves -= 1
+
+            return True
         else:
             self.n_moves += 1
             if "'" in move:
@@ -159,6 +183,11 @@ class Cube():
                 self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['f'][2], self.faces['l'][2], self.faces['b'][2], self.faces['r'][2]
             elif move == "d'":
                 self.faces['r'][2], self.faces['f'][2], self.faces['l'][2], self.faces['b'][2] = self.faces['b'][2], self.faces['r'][2], self.faces['f'][2], self.faces['l'][2]
+            else:
+                return False
+
+
+            return True
 
 
     def scramble(self):
